@@ -1,0 +1,20 @@
+# File: .gitignore
+
+# Dependencias de Node
+node_modules/
+
+# Entorno de backend (credenciales)
+backend/.env
+
+# Ignorar imágenes subidas en backend
+backend/uploads/    # este cambio es para que Git ignore nuevas imágenes y no trackee uploads
+
+# Carpetas de compilación del frontend
+frontend/build/
+frontend/dist/
+
+# Archivos de logs
+*.log
+
+# Configuraciones de editores
+.vscode/

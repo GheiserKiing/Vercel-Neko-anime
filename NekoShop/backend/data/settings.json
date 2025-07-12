@@ -1,0 +1,36 @@
+{
+  "siteSettings": {
+    "heroText": "Neko Anime 2",
+    "heroSubtext": "",
+    "heroImageUrl": "/uploads/1751531928018-Imagen%20de%20WhatsApp%202025-03-31%20a%20las%2007.12.31_8aa64f56.jpg",
+    "heroTextPosX": 50,
+    "heroTextPosY": 50,
+    "heroTextScale": 100,
+    "heroTextColor": "#ffffff",
+    "heroPositionX": 50,
+    "heroPositionY": 72,
+    "heroScale": 62,
+    "heroImageOpacity": 100,
+    "categoryHeroes": {
+      "1": {
+        "heroText": "magia",
+        "heroImageUrl": "/uploads/1751533200169-fondo-cielo-pastel-acuarela-pintado-mano_52683-60366.jpg",
+        "heroPositionX": 50,
+        "heroPositionY": 50,
+        "heroScale": 100,
+        "heroTextPosY": 76,
+        "heroTextPosX": 50,
+        "heroTextScale": 217,
+        "heroImageOpacity": 111,
+        "heroTextColor": "#e01a1a"
+      },
+      "2": {
+        "heroText": "",
+        "heroImageUrl": "/uploads/1751532090836-827d72655cdf8a34b36eb26abf076918.jpg",
+        "heroPositionX": 50,
+        "heroPositionY": 50,
+        "heroScale": 37
+      }
+    }
+  }
+}

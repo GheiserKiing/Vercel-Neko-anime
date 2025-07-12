@@ -1,0 +1,41 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend de NekoShop con SQLite",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "lint": "eslint . --ext .js",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@paypal/checkout-server-sdk": "^1.0.3",
+    "axios": "^1.10.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "csv-parse": "^5.6.0",
+    "csv-stringify": "^6.5.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "graphql": "^16.6.0",
+    "graphql-request": "^5.0.0",
+    "handlebars": "^4.7.8",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.1",
+    "node-fetch": "^2.7.0",
+    "nodemailer": "^7.0.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "eslint": "^8.47.0",
+    "eslint-config-prettier": "^9.0.0",
+    "jest": "^29.6.1",
+    "nodemon": "^3.0.1",
+    "supertest": "^6.3.3"
+  }
+}

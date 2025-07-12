@@ -1,0 +1,17 @@
+{
+  "name": "nekoshop",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "seed:suppliers": "cd NekoShop/backend && node seedSuppliers.js",
+    "start:backend": "cd NekoShop/backend && npm install && node server.js",
+    "start:frontend": "cd NekoShop/frontend && npm install && npm start"
+  },
+  "dependencies": {
+    "@paypal/react-paypal-js": "^8.8.3",
+    "axios": "^1.10.0",
+    "recharts": "^2.15.4",
+    "socket.io-client": "^4.8.1",
+    "web-vitals": "^5.0.3"
+  }
+}
