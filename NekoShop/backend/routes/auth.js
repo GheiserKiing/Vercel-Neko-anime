@@ -5,6 +5,10 @@ require("dotenv").config();
 
 const router = express.Router();
 
+// 👉 Añadimos logs para verificar ENV
+console.log("🔑 ADMIN_USER env:", process.env.ADMIN_USER);
+console.log("🔑 ADMIN_PASS env:", process.env.ADMIN_PASS);
+
 // POST /api/login
 router.post("/", express.json(), (req, res) => {
   const { username, password } = req.body;
