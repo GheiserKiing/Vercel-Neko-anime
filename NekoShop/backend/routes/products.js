@@ -1,9 +1,8 @@
 // File: backend/routes/products.js
-const express = require("express");
-const path    = require("path");
-const fs      = require("fs");
-const sqlite3 = require("sqlite3").verbose();
-const multer  = require("multer");
+const express   = require("express");
+const path      = require("path");
+const sqlite3   = require("sqlite3").verbose();
+
 const router  = express.Router();
 
 // Conexión a la base SQLite
@@ -12,20 +11,12 @@ const db     = new sqlite3.Database(dbFile, err => {
   if (err) console.error("DB error:", err);
 });
 
-// Asegura la carpeta uploads
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-
-// Configuración de Multer
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename:    (_req, file, cb) => cb(null, `${Date.now()}-${file.originalname}`)
-});
-const upload = multer({ storage });
-
 // Helper para construir URL pública de las imágenes
-function toHostUrl(req, filename) {
-  return `${req.protocol}://${req.get("host")}/uploads/${filename}`;
+function toHostUrl(req, url) {
+  // Si la URL ya empieza con http, la devolvemos tal cual.
+  if (/^https?:\/\//.test(url)) return url;
+  // Si fuera un path local (no es nuestro caso), montaríamos /uploads.
+  return `${req.protocol}://${req.get("host")}/uploads/${url}`;
 }
 
 // ─── GET /api/products ─── Listar productos ─────────────────────────────
@@ -51,12 +42,12 @@ router.get("/", (req, res) => {
       const out = rows.map(r => {
         let imgs = [];
         try { imgs = JSON.parse(r.images || "[]"); } catch {}
-        const images = imgs.map(fn => toHostUrl(req, fn));
-        const coverFn = r.cover_image_url || imgs[0] || null;
+        const images = imgs.map(url => toHostUrl(req, url));
+        const coverUrl = r.cover_image_url ? toHostUrl(req, r.cover_image_url) : (images[0] || null);
         return {
           ...r,
           images,
-          cover_image_url: coverFn ? toHostUrl(req, coverFn) : null
+          cover_image_url: coverUrl
         };
       });
       res.json({ data: out, total });
@@ -72,12 +63,12 @@ router.get("/:id", (req, res) => {
     if (!r) return res.status(404).json({ error: "Not found" });
     let imgs = [];
     try { imgs = JSON.parse(r.images || "[]"); } catch {}
-    const images = imgs.map(fn => toHostUrl(req, fn));
-    const coverFn = r.cover_image_url || imgs[0] || null;
+    const images = imgs.map(url => toHostUrl(req, url));
+    const coverUrl = r.cover_image_url ? toHostUrl(req, r.cover_image_url) : (images[0] || null);
     res.json({
       ...r,
       images,
-      cover_image_url: coverFn ? toHostUrl(req, coverFn) : null
+      cover_image_url: coverUrl
     });
   });
 });
@@ -138,39 +129,28 @@ router.delete("/:id", (req, res) => {
   });
 });
 
-// ─── POST /api/products/:id/images ─── Gestionar imágenes ────────────────
-router.post("/:id/images", upload.array("images"), async (req, res) => {
+// ─── POST /api/products/:id/images ─── Asociar imágenes subidas a Cloudinary ───
+router.post("/:id/images", express.json(), async (req, res) => {
   try {
     const id = +req.params.id;
-    const prev = await new Promise((r, rej) =>
-      db.get("SELECT images FROM products WHERE id = ?", [id], (e, row) =>
-        e ? rej(e) : r(JSON.parse(row.images || "[]"))
-      )
-    );
-    const removed = JSON.parse(req.body.removed || "[]");
-    const kept = prev.filter(fn => !removed.includes(fn));
-    const newFiles = req.files.map(f => f.filename);
-    const updated = [...kept, ...newFiles];
-    const idx = parseInt(req.body.cover_index, 10);
-    const cover = (!isNaN(idx) && updated[idx]) ? updated[idx] : (updated[0] || null);
-
-    for (let fn of removed) {
-      const p = path.join(uploadDir, fn);
-      if (fs.existsSync(p)) fs.unlinkSync(p);
+    const { urls, coverIndex } = req.body;
+    if (!Array.isArray(urls) || urls.length === 0) {
+      return res.status(400).json({ error: "urls debe ser un array no vacío" });
     }
-
-    await new Promise((r, rej) =>
+    // Guardar en DB
+    const cover = urls[coverIndex] || urls[0];
+    await new Promise((resolve, reject) => {
       db.run(
         "UPDATE products SET images = ?, cover_image_url = ? WHERE id = ?",
-        [JSON.stringify(updated), cover, id],
-        err => err ? rej(err) : r()
-      )
-    );
-
-    const images = updated.map(fn => toHostUrl(req, fn));
-    res.json({ images, cover_image_url: cover ? toHostUrl(req, cover) : null });
+        [JSON.stringify(urls), cover, id],
+        err => err ? reject(err) : resolve()
+      );
+    });
+    // Devolver data lista para el frontend
+    const fullUrls = urls.map(url => toHostUrl(req, url));
+    res.json({ images: fullUrls, cover_image_url: toHostUrl(req, cover) });
   } catch (err) {
-    console.error(err);
+    console.error("Error asociando imágenes:", err);
     res.status(500).json({ error: err.message });
   }
 });
