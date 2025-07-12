@@ -1,6 +1,16 @@
 {
   "version": 2,
-  "installCommand": "npm install --prefix NekoShop/frontend",
-  "buildCommand":   "npm run build --prefix NekoShop/frontend",
-  "outputDirectory": "NekoShop/frontend/build"
+  "builds": [
+    {
+      "src": "NekoShop/frontend/package.json",
+      "use": "@vercel/static-build",
+      "config": { "distDir": "build" }
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "NekoShop/frontend/build/$1"
+    }
+  ]
 }
