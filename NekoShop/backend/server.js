@@ -4,7 +4,7 @@ const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
 
-// Tu pool de Postgres
+// Si usas PostgreSQL
 const pool = require('./db-postgres');
 
 // Routers
@@ -27,34 +27,39 @@ const uploadImageRouter    = require('./routes/uploadImage');
 
 const app = express();
 
-// — Construye lista de orígenes permitidos para CORS
+// ─── CORS: lista de orígenes permitidos ────────────────────────────────
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,      // http://localhost:3000
-  process.env.FRONTEND_URL        // https://...vercel.app
+  process.env.CLIENT_ORIGIN,  // e.g. http://localhost:3000
+  process.env.FRONTEND_URL    // e.g. https://neko-shop-frontend.vercel.app
 ].filter(Boolean);
 
 console.log('🔑 Allowed CORS origins:', allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
+    // si no hay origin (curl/Postman) o está en la lista, ok
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    callback(new Error(`CORS policy: origin ${origin} no permitido`));
+    // si no, rechazamos
+    return callback(new Error(`CORS policy: origin ${origin} no permitido`));
   }
 }));
 
+// ─── Middlewares ────────────────────────────────────────────────────────
 app.use(express.json());
 
-// — Carpeta de ficheros estáticos (imágenes subidas)
+// ─── Carpeta de estáticos para /uploads ─────────────────────────────────
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+if (!fs.existsSync(uploadDir)) {
+  fs.mkdirSync(uploadDir, { recursive: true });
+}
 app.use('/uploads', express.static(uploadDir));
 
-// — Health check
+// ─── Health check ───────────────────────────────────────────────────────
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// — Montaje de rutas
+// ─── Montaje de rutas ──────────────────────────────────────────────────
 app.use('/api/login',           authRouter);
 app.use('/api/suppliers',       suppliersAuthRouter);
 app.use('/api/products',        productsRouter);
@@ -70,15 +75,20 @@ app.use('/api/messages',        messagesRouter);
 app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
-app.use('/api/upload',          uploadImageRouter);
 
-// — 404 y handler de errores
+// Este router contiene la ruta POST /api/products/:id/images
+// si además tienes una ruta genérica de subida la puedes poner en /api/upload
+app.use('/api', uploadImageRouter);
+
+// ─── 404 handler ───────────────────────────────────────────────────────
 app.use((_, res) => res.status(404).json({ error: 'Endpoint not found' }));
+
+// ─── Error handler ────────────────────────────────────────────────────
 app.use((err, _, res, __) => {
   console.error('🔥 Error:', err.stack || err);
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
 });
 
-// — Arranque del servidor
+// ─── Levantar servidor ─────────────────────────────────────────────────
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));
