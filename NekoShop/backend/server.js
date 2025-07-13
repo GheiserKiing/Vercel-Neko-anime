@@ -5,7 +5,9 @@ const express   = require('express');
 const cors      = require('cors');
 const path      = require('path');
 const fs        = require('fs');
-const sqlite3   = require('sqlite3').verbose();
+
+// Importa pool de Postgres
+const pool      = require('./db-postgres');
 
 // Routers
 const authRouter           = require('./routes/auth');
@@ -23,49 +25,12 @@ const messagesRouter       = require('./routes/messages');
 const emailLogsRouter      = require('./routes/emailLogs');
 const emailTemplatesRouter = require('./routes/emailTemplates');
 const newsletterRouter     = require('./routes/newsletter');
-// Nueva ruta de subida
+// Nueva ruta de subida (solo aquí)
 const uploadImageRouter    = require('./routes/uploadImage');
 
 const app = express();
 
-// Conectar y migrar DB
-const dbFile = path.join(__dirname, 'data', 'products.db');
-const db     = new sqlite3.Database(dbFile, err => {
-  if (err) {
-    console.error('❌ Error conectando a products.db:', err);
-    process.exit(1);
-  }
-  console.log('✅ Conectado a products.db');
-
-  db.serialize(() => {
-    // Tabla suppliers
-    db.run(`
-      CREATE TABLE IF NOT EXISTS suppliers (
-        id           INTEGER PRIMARY KEY AUTOINCREMENT,
-        name         TEXT    NOT NULL,
-        api_url      TEXT    DEFAULT '',
-        config       TEXT    DEFAULT '{}',
-        callbackUrl  TEXT    DEFAULT '',
-        adminUrl     TEXT    DEFAULT ''
-      );
-    `);
-    // Asegura columnas callbackUrl/adminUrl
-    db.all('PRAGMA table_info(suppliers);', (_, cols) => {
-      const names = cols.map(c => c.name);
-      if (!names.includes('callbackUrl')) {
-        console.log('🔧 Agregando columna callbackUrl a suppliers');
-        db.run('ALTER TABLE suppliers ADD COLUMN callbackUrl TEXT;');
-      }
-      if (!names.includes('adminUrl')) {
-        console.log('🔧 Agregando columna adminUrl a suppliers');
-        db.run('ALTER TABLE suppliers ADD COLUMN adminUrl TEXT;');
-      }
-    });
-    // Otras migraciones…
-  });
-});
-
-// Asegurar carpeta uploads
+// Asegura carpeta uploads
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
@@ -81,14 +46,12 @@ app.use(
   express.static(uploadDir)
 );
 
-// Ruta de salud
+// Ruta de salud: prueba esto primero
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// OAuth proveedores (AliExpress)
-app.use('/api/suppliers', suppliersAuthRouter);
-
-// Montar routers de API
+// Monta routers de API *antes* de la ruta de subida
 app.use('/api/login',           authRouter);
+app.use('/api/suppliers',       suppliersAuthRouter);
 app.use('/api/products',        productsRouter);
 app.use('/api/categories',      categoriesRouter);
 app.use('/api/orders',          ordersRouter);
@@ -101,16 +64,17 @@ app.use('/api/messages',        messagesRouter);
 app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
-// Montar nueva ruta de subida de imágenes
-app.use('/api', uploadImageRouter);
 
-// 404 y manejador de errores
+// **Solo** la subida de imágenes en /api/upload
+app.use('/api/upload', uploadImageRouter);
+
+// 404 y error handler
 app.use((_, res) => res.status(404).json({ error: 'Endpoint not found' }));
 app.use((err, _, res, __) => {
   console.error('🔥 Error:', err.stack || err);
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
 });
 
-// Iniciar servidor
+// Arranque
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));
