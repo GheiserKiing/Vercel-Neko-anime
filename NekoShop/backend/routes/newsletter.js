@@ -1,12 +1,12 @@
-// File: backend/routes/newsletter.js
-const express = require("express");
-const router  = express.Router();
-const sqlite3 = require("sqlite3").verbose();
-const path    = require("path");
-const db      = new sqlite3.Database(path.join(__dirname, "../data/products.db"));
-const { sendWelcomeEmail } = require("../services/emailService");
+const express           = require("express");
+const sqlite3           = require("sqlite3").verbose();
+const path              = require("path");
+const { sendWelcomeEmail, sendTemplatedEmail } = require("../services/emailService");
 
-// POST suscripción con segmentación
+const router = express.Router();
+const db     = new sqlite3.Database(path.join(__dirname, "../data/products.db"));
+
+/** POST /api/newsletter — Suscribir */
 router.post("/", express.json(), (req, res, next) => {
   const { email, country = "", interest = "" } = req.body;
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
@@ -26,7 +26,7 @@ router.post("/", express.json(), (req, res, next) => {
   );
 });
 
-// GET listado
+/** GET /api/newsletter — Listar suscriptores */
 router.get("/", (req, res, next) => {
   db.all(
     `SELECT id, email, country, interest, subscribed_at AS subscribedAt
@@ -39,11 +39,12 @@ router.get("/", (req, res, next) => {
   );
 });
 
-// POST campaña segmentada
+/** POST /api/newsletter/campaign — Enviar campaña segmentada */
 router.post("/campaign", express.json(), (req, res, next) => {
   const { segment = {}, subject, body } = req.body;
-  if (!subject || !body) return res.status(400).json({ error: "Subject & body required" });
-
+  if (!subject || !body) {
+    return res.status(400).json({ error: "Subject & body required" });
+  }
   const clauses = [], params = [];
   if (segment.interest) { clauses.push("interest = ?"); params.push(segment.interest); }
   if (segment.country)  { clauses.push("country = ?");  params.push(segment.country); }
@@ -53,12 +54,13 @@ router.post("/campaign", express.json(), (req, res, next) => {
   db.all(`SELECT email FROM newsletter_subscribers ${where}`, params, async (err, rows) => {
     if (err) return next(err);
     try {
-      const { sendTemplatedEmail } = require("../services/emailService");
+      let sent = 0;
       for (const { email } of rows) {
         await sendTemplatedEmail("newsletter_campaign", { body }, email);
+        sent++;
       }
-      res.json({ sent: rows.length });
-    } catch(e) {
+      res.json({ sent });
+    } catch (e) {
       next(e);
     }
   });

@@ -1,19 +1,17 @@
-// File: backend/routes/categories.js
-
-const express = require("express");
-const sqlite3 = require("sqlite3").verbose();
-const path    = require("path");
+const express    = require("express");
+const sqlite3    = require("sqlite3").verbose();
+const path       = require("path");
 const { promisify } = require("util");
-const router  = express.Router();
+const router     = express.Router();
 
-// Conexión a SQLite
-const dbPath = path.join(__dirname, "../data/products.db");
-const db     = new sqlite3.Database(dbPath);
+// Conexión
+const dbPath   = path.join(__dirname, "../data/products.db");
+const db       = new sqlite3.Database(dbPath);
 const allAsync = promisify(db.all.bind(db));
 const getAsync = promisify(db.get.bind(db));
 const runAsync = promisify(db.run.bind(db));
 
-// ─── Asegurar que existen las tablas categories y subcategories ────────────────
+// Asegurar tablas
 db.serialize(() => {
   db.run(`
     CREATE TABLE IF NOT EXISTS categories (
@@ -32,27 +30,23 @@ db.serialize(() => {
   `);
 });
 
-// ─── GET /api/categories ─ Listar todas las categorías
-router.get("/", async (req, res) => {
+/** GET /api/categories — Listar categorías */
+router.get("/", async (_req, res) => {
   try {
-    const rows = await allAsync(`SELECT id, name FROM categories ORDER BY name;`);
-    res.json(rows); // aunque esté vacío, devuelve []
+    const rows = await allAsync("SELECT id,name FROM categories ORDER BY name;");
+    res.json(rows);
   } catch (err) {
     res.status(500).json({ error: "Error cargando categorías" });
   }
 });
 
-// ─── POST /api/categories ┒ Crear nueva categoría
+/** POST /api/categories — Crear categoría */
 router.post("/", express.json(), async (req, res) => {
-  const { name } = req.body;
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: "Nombre de categoría requerido" });
-  }
+  const name = (req.body.name || "").trim();
+  if (!name) return res.status(400).json({ error: "Nombre requerido" });
   try {
-    await runAsync(`INSERT INTO categories (name) VALUES (?);`, [name.trim()]);
-    const cat = await getAsync(
-      `SELECT id, name FROM categories WHERE id = last_insert_rowid();`
-    );
+    await runAsync("INSERT INTO categories(name) VALUES(?);", [name]);
+    const cat = await getAsync("SELECT id,name FROM categories WHERE id=last_insert_rowid();");
     res.status(201).json(cat);
   } catch (err) {
     if (err.message.includes("UNIQUE")) {
@@ -62,23 +56,16 @@ router.post("/", express.json(), async (req, res) => {
   }
 });
 
-// ─── PUT /api/categories/:id ┒ Actualizar categoría
+/** PUT /api/categories/:id — Actualizar categoría */
 router.put("/:id", express.json(), async (req, res) => {
-  const id = Number(req.params.id);
-  const { name } = req.body;
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: "Nombre de categoría requerido" });
-  }
+  const id   = Number(req.params.id);
+  const name = (req.body.name||"").trim();
+  if (!name) return res.status(400).json({ error: "Nombre requerido" });
   try {
-    await runAsync(
-      `UPDATE categories SET name = ? WHERE id = ?;`,
-      [name.trim(), id]
-    );
-    const updated = await getAsync(`SELECT id, name FROM categories WHERE id = ?;`, [id]);
-    if (!updated) {
-      return res.status(404).json({ error: "Categoría no encontrada" });
-    }
-    res.json(updated);
+    await runAsync("UPDATE categories SET name=? WHERE id=?;", [name, id]);
+    const cat = await getAsync("SELECT id,name FROM categories WHERE id=?;", [id]);
+    if (!cat) return res.status(404).json({ error: "No encontrada" });
+    res.json(cat);
   } catch (err) {
     if (err.message.includes("UNIQUE")) {
       return res.status(400).json({ error: "Categoría ya existe" });
@@ -87,46 +74,42 @@ router.put("/:id", express.json(), async (req, res) => {
   }
 });
 
-// ─── DELETE /api/categories/:id ┒ Borrar categoría y sus subcategorías
+/** DELETE /api/categories/:id — Borrar categoría (y subcats) */
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await runAsync(`DELETE FROM categories WHERE id = ?;`, [id]);
-    res.json({ message: "Categoría eliminada correctamente" });
-  } catch (err) {
+    await runAsync("DELETE FROM categories WHERE id=?;", [id]);
+    res.json({ message: "Eliminada correctamente" });
+  } catch {
     res.status(500).json({ error: "Error borrando categoría" });
   }
 });
 
-// ─── GET /api/categories/:id/subcategories ┒ Listar subcategorías
+/** GET /api/categories/:id/subcategories — Listar subcategorías */
 router.get("/:id/subcategories", async (req, res) => {
   const catId = Number(req.params.id);
   try {
     const rows = await allAsync(
-      `SELECT id, name FROM subcategories WHERE category_id = ? ORDER BY name;`,
+      "SELECT id,name FROM subcategories WHERE category_id=? ORDER BY name;",
       [catId]
     );
     res.json(rows);
-  } catch (err) {
+  } catch {
     res.status(500).json({ error: "Error cargando subcategorías" });
   }
 });
 
-// ─── POST /api/categories/:id/subcategories ┒ Crear subcategoría
+/** POST /api/categories/:id/subcategories — Crear subcategoría */
 router.post("/:id/subcategories", express.json(), async (req, res) => {
   const catId = Number(req.params.id);
-  const { name } = req.body;
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: "Nombre de subcategoría requerido" });
-  }
+  const name  = (req.body.name||"").trim();
+  if (!name) return res.status(400).json({ error: "Nombre requerido" });
   try {
     await runAsync(
-      `INSERT INTO subcategories (category_id, name) VALUES (?, ?);`,
-      [catId, name.trim()]
+      "INSERT INTO subcategories(category_id,name) VALUES(?,?);",
+      [catId, name]
     );
-    const sub = await getAsync(
-      `SELECT id, name FROM subcategories WHERE id = last_insert_rowid();`
-    );
+    const sub = await getAsync("SELECT id,name FROM subcategories WHERE id=last_insert_rowid();");
     res.status(201).json(sub);
   } catch (err) {
     if (err.message.includes("UNIQUE")) {
@@ -136,23 +119,16 @@ router.post("/:id/subcategories", express.json(), async (req, res) => {
   }
 });
 
-// ─── PUT /api/categories/:catId/subcategories/:id ┒ Actualizar subcategoría
+/** PUT /api/categories/:catId/subcategories/:id — Actualizar subcategoría */
 router.put("/:catId/subcategories/:id", express.json(), async (req, res) => {
-  const id = Number(req.params.id);
-  const { name } = req.body;
-  if (!name || !name.trim()) {
-    return res.status(400).json({ error: "Nombre de subcategoría requerido" });
-  }
+  const id   = Number(req.params.id);
+  const name = (req.body.name||"").trim();
+  if (!name) return res.status(400).json({ error: "Nombre requerido" });
   try {
-    await runAsync(
-      `UPDATE subcategories SET name = ? WHERE id = ?;`,
-      [name.trim(), id]
-    );
-    const updated = await getAsync(`SELECT id, name FROM subcategories WHERE id = ?;`, [id]);
-    if (!updated) {
-      return res.status(404).json({ error: "Subcategoría no encontrada" });
-    }
-    res.json(updated);
+    await runAsync("UPDATE subcategories SET name=? WHERE id=?;", [name, id]);
+    const sub = await getAsync("SELECT id,name FROM subcategories WHERE id=?;", [id]);
+    if (!sub) return res.status(404).json({ error: "No encontrada" });
+    res.json(sub);
   } catch (err) {
     if (err.message.includes("UNIQUE")) {
       return res.status(400).json({ error: "Subcategoría ya existe" });
@@ -161,13 +137,13 @@ router.put("/:catId/subcategories/:id", express.json(), async (req, res) => {
   }
 });
 
-// ─── DELETE /api/categories/:catId/subcategories/:id ┒ Borrar subcategoría
+/** DELETE /api/categories/:catId/subcategories/:id — Borrar subcategoría */
 router.delete("/:catId/subcategories/:id", async (req, res) => {
   const id = Number(req.params.id);
   try {
-    await runAsync(`DELETE FROM subcategories WHERE id = ?;`, [id]);
-    res.json({ message: "Subcategoría eliminada correctamente" });
-  } catch (err) {
+    await runAsync("DELETE FROM subcategories WHERE id=?;", [id]);
+    res.json({ message: "Eliminada correctamente" });
+  } catch {
     res.status(500).json({ error: "Error borrando subcategoría" });
   }
 });

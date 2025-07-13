@@ -1,22 +1,25 @@
-// File: backend/routes/dropship.js
 const express = require("express");
-const router  = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 const path    = require("path");
 
+const router = express.Router();
 const dbFile = path.join(__dirname, "../data/products.db");
 const db     = new sqlite3.Database(dbFile);
 
-// POST /api/dropship/import
-// Recibe { products: [ { sku, name, description, price, stock, category_id, subcategory_id } ] }
+/**
+ * POST /api/dropship/import
+ * Recibe { products: [ { sku, name, description, price, stock, category_id, subcategory_id } ] }
+ */
 router.post("/api/dropship/import", express.json(), (req, res) => {
   const prods = Array.isArray(req.body.products) ? req.body.products : [];
-  if (!prods.length) return res.status(400).json({ error: "No hay productos para importar" });
+  if (!prods.length) {
+    return res.status(400).json({ error: "No hay productos para importar" });
+  }
 
   const insertSQL = `
     INSERT INTO products
-      (sku,name,description,price,stock,category_id,subcategory_id,images,cover_image_url)
-    VALUES (?,?,?,?,?,?,?, '[]', NULL)
+      (sku, name, description, price, stock, category_id, subcategory_id, images, cover_image_url)
+    VALUES (?,?,?,?,?,?,?,'[]', NULL)
   `;
   let inserted = 0;
 

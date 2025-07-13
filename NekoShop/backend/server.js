@@ -1,60 +1,60 @@
-// File: NekoShop/backend/server.js
-
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
 
-// Routers y pool...
-const pool                  = require('./db-postgres');
-const authRouter            = require('./routes/auth');
-const suppliersAuthRouter   = require('./routes/suppliersAuth');
-const productsRouter        = require('./routes/products');
-const categoriesRouter      = require('./routes/categories');
-const ordersRouter          = require('./routes/orders');
-const metricsRouter         = require('./routes/metrics');
-const bulkRouter            = require('./routes/bulk');
-const settingsRouter        = require('./routes/settings');
-const paymentsRouter        = require('./routes/payments');
-const suppliersRouter       = require('./routes/suppliers');
-const dropshipRouter        = require('./routes/dropship');
-const messagesRouter        = require('./routes/messages');
-const emailLogsRouter       = require('./routes/emailLogs');
-const emailTemplatesRouter  = require('./routes/emailTemplates');
-const newsletterRouter      = require('./routes/newsletter');
-const uploadImageRouter     = require('./routes/uploadImage');
+// Si usas Postgres, tu pool está en ./db-postgres.js
+const pool = require('./db-postgres');
+
+// Routers
+const authRouter           = require('./routes/auth');
+const suppliersAuthRouter  = require('./routes/suppliersAuth');
+const productsRouter       = require('./routes/products');
+const categoriesRouter     = require('./routes/categories');
+const ordersRouter         = require('./routes/orders');
+const metricsRouter        = require('./routes/metrics');
+const bulkRouter           = require('./routes/bulk');
+const settingsRouter       = require('./routes/settings');
+const paymentsRouter       = require('./routes/payments');
+const suppliersRouter      = require('./routes/suppliers');
+const dropshipRouter       = require('./routes/dropship');
+const messagesRouter       = require('./routes/messages');
+const emailLogsRouter      = require('./routes/emailLogs');
+const emailTemplatesRouter = require('./routes/emailTemplates');
+const newsletterRouter     = require('./routes/newsletter');
+const uploadImageRouter    = require('./routes/uploadImage');
 
 const app = express();
 
-// Construye la lista de orígenes permitidos
+// — Construye lista de orígenes permitidos para CORS
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,    // p.ej. http://localhost:3000
-  process.env.FRONTEND_URL      // p.ej. https://neko-shop-frontend.vercel.app
+  process.env.CLIENT_ORIGIN,  // http://localhost:3000
+  process.env.FRONTEND_URL    // https://neko-shop-frontend.vercel.app
 ].filter(Boolean);
-
 console.log('🔑 Allowed CORS origins:', allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
+    // Permite si no hay origin (Postman) o si está en la lista
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    return callback(new Error(`CORS policy: origin ${origin} no permitido`));
+    callback(new Error(`CORS policy: origin ${origin} no permitido`));
   }
 }));
 
 app.use(express.json());
 
-// Carpeta uploads
+// — Carpeta de ficheros estáticos (imágenes subidas)
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use('/uploads', express.static(uploadDir));
 
-// Health check
+// — Health check
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Montaje de rutas
+// — Montaje de rutas en el orden correcto
 app.use('/api/login',           authRouter);
 app.use('/api/suppliers',       suppliersAuthRouter);
 app.use('/api/products',        productsRouter);
@@ -65,19 +65,22 @@ app.use('/api/bulk',            bulkRouter);
 app.use('/api/settings',        settingsRouter);
 app.use('/api/payments',        paymentsRouter);
 app.use('/api/suppliers',       suppliersRouter);
+app.use('/api/dropship',        dropshipRouter);
 app.use('/api/messages',        messagesRouter);
 app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
-app.use('/api/upload',          uploadImageRouter);
+app.use('/api/upload',          uploadImageRouter);  // tu ruta genérica de upload si la tienes
 
-// 404 y error handler
+// — 404 handler
 app.use((_, res) => res.status(404).json({ error: 'Endpoint not found' }));
+
+// — Error handler
 app.use((err, _, res, __) => {
   console.error('🔥 Error:', err.stack || err);
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
 });
 
-// Levanta servidor
+// — Arranque del servidor
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));

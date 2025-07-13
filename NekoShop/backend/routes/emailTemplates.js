@@ -1,15 +1,16 @@
-// File: backend/routes/emailTemplates.js
 const express = require("express");
-const router  = express.Router();
 const sqlite3 = require("sqlite3").verbose();
 const path    = require("path");
 
-const db = new sqlite3.Database(path.join(__dirname, "../data/products.db"));
+const router = express.Router();
+const db     = new sqlite3.Database(path.join(__dirname, "../data/products.db"));
 
-// GET /api/email-templates
+/** GET /api/email-templates — Listar plantillas */
 router.get("/", (req, res, next) => {
   db.all(
-    "SELECT key, subject_template, body_template FROM email_templates ORDER BY key",
+    `SELECT key, subject_template, body_template
+     FROM email_templates
+     ORDER BY key`,
     (err, rows) => {
       if (err) return next(err);
       res.json(rows);
@@ -17,9 +18,9 @@ router.get("/", (req, res, next) => {
   );
 });
 
-// PUT /api/email-templates/:key
+/** PUT /api/email-templates/:key — Actualizar plantilla */
 router.put("/:key", express.json(), (req, res, next) => {
-  const { key } = req.params;
+  const key = req.params.key;
   const { subject_template, body_template } = req.body;
   if (!subject_template || !body_template) {
     return res.status(400).json({ error: "Asunto y cuerpo obligatorios" });
@@ -31,7 +32,9 @@ router.put("/:key", express.json(), (req, res, next) => {
     [subject_template, body_template, key],
     function(err) {
       if (err) return next(err);
-      if (this.changes === 0) return res.status(404).json({ error: "Plantilla no encontrada" });
+      if (this.changes === 0) {
+        return res.status(404).json({ error: "Plantilla no encontrada" });
+      }
       res.json({ ok: true });
     }
   );

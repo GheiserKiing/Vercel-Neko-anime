@@ -1,24 +1,19 @@
-// backend/data/db.js
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
+// File: backend/db.js
+const { Pool } = require('pg');
 
-const dbPath = path.join(__dirname, 'products.db');
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) console.error("Error al conectar DB:", err);
+if (!process.env.DATABASE_URL) {
+  console.error('❌ Error: falta la variable DATABASE_URL');
+  process.exit(1);
+}
+
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
 module.exports = {
-  all: (sql, params = []) =>
-    new Promise((resolve, reject) =>
-      db.all(sql, params, (err, rows) =>
-        err ? reject(err) : resolve(rows)
-      )
-    ),
-
-  run: (sql, params = []) =>
-    new Promise((resolve, reject) =>
-      db.run(sql, params, function (err) {
-        err ? reject(err) : resolve({ lastID: this.lastID, changes: this.changes });
-      })
-    ),
+  query: (text, params) => pool.query(text, params),
+  pool
 };
