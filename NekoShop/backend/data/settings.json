@@ -2,15 +2,10 @@
   "siteSettings": {
     "heroText": "Neko Anime 2",
     "heroSubtext": "",
-    "heroImageUrl": "/uploads/1751531928018-Imagen%20de%20WhatsApp%202025-03-31%20a%20las%2007.12.31_8aa64f56.jpg",
-    "heroTextPosX": 50,
-    "heroTextPosY": 50,
-    "heroTextScale": 100,
-    "heroTextColor": "#ffffff",
+    "heroImageUrl": "/uploads/1752411115272-ChatGPT%20Image%2031%20mar%202025,%2007_28_23.png",
     "heroPositionX": 50,
-    "heroPositionY": 72,
-    "heroScale": 62,
-    "heroImageOpacity": 100,
+    "heroPositionY": 36,
+    "heroScale": 46,
     "categoryHeroes": {
       "1": {
         "heroText": "magia",
@@ -31,6 +26,11 @@
         "heroPositionY": 50,
         "heroScale": 37
       }
-    }
+    },
+    "heroTextPosX": 50,
+    "heroTextPosY": 50,
+    "heroTextScale": 100,
+    "heroTextColor": "#ffffff",
+    "heroImageOpacity": 100
   }
 }
