@@ -4,7 +4,7 @@ const cors    = require('cors');
 const path    = require('path');
 const fs      = require('fs');
 
-// Si usas Postgres, tu pool está en ./db-postgres.js
+// Tu pool de Postgres
 const pool = require('./db-postgres');
 
 // Routers
@@ -29,14 +29,14 @@ const app = express();
 
 // — Construye lista de orígenes permitidos para CORS
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,  // http://localhost:3000
-  process.env.FRONTEND_URL    // https://neko-shop-frontend.vercel.app
+  process.env.CLIENT_ORIGIN,      // http://localhost:3000
+  process.env.FRONTEND_URL        // https://...vercel.app
 ].filter(Boolean);
+
 console.log('🔑 Allowed CORS origins:', allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
-    // Permite si no hay origin (Postman) o si está en la lista
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
@@ -54,7 +54,7 @@ app.use('/uploads', express.static(uploadDir));
 // — Health check
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// — Montaje de rutas en el orden correcto
+// — Montaje de rutas
 app.use('/api/login',           authRouter);
 app.use('/api/suppliers',       suppliersAuthRouter);
 app.use('/api/products',        productsRouter);
@@ -70,12 +70,10 @@ app.use('/api/messages',        messagesRouter);
 app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
-app.use('/api/upload',          uploadImageRouter);  // tu ruta genérica de upload si la tienes
+app.use('/api/upload',          uploadImageRouter);
 
-// — 404 handler
+// — 404 y handler de errores
 app.use((_, res) => res.status(404).json({ error: 'Endpoint not found' }));
-
-// — Error handler
 app.use((err, _, res, __) => {
   console.error('🔥 Error:', err.stack || err);
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
