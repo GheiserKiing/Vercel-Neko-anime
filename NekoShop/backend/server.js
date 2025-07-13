@@ -1,13 +1,13 @@
 // File: NekoShop/backend/server.js
 
 require('dotenv').config();
-const express   = require('express');
-const cors      = require('cors');
-const path      = require('path');
-const fs        = require('fs');
+const express = require('express');
+const cors    = require('cors');
+const path    = require('path');
+const fs      = require('fs');
 
-// Importa pool de Postgres
-const pool      = require('./db-postgres');
+// Pool de PostgreSQL
+const pool = require('./db-postgres');
 
 // Routers
 const authRouter           = require('./routes/auth');
@@ -25,31 +25,49 @@ const messagesRouter       = require('./routes/messages');
 const emailLogsRouter      = require('./routes/emailLogs');
 const emailTemplatesRouter = require('./routes/emailTemplates');
 const newsletterRouter     = require('./routes/newsletter');
-// Nueva ruta de subida (solo aquí)
+// Ruta de subida de imágenes
 const uploadImageRouter    = require('./routes/uploadImage');
 
 const app = express();
+
+// CORS: permitir local y producción
+const allowedOrigins = [
+  process.env.CLIENT_ORIGIN,         // p.ej. http://localhost:3000
+  process.env.FRONTEND_URL           // p.ej. https://neko-shop-frontend.vercel.app
+].filter(Boolean);
+
+app.use(cors({
+  origin(origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`CORS policy: origin ${origin} no permitido`));
+    }
+  }
+}));
 
 // Asegura carpeta uploads
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 
-// Middlewares
+// JSON body parser
 app.use(express.json());
-app.use(cors({ origin: process.env.CLIENT_ORIGIN || 'http://localhost:3000' }));
+
+// Sirve archivos estáticos de uploads
 app.use(
   '/uploads',
   (req, res, next) => {
-    res.setHeader('Access-Control-Allow-Origin', process.env.CLIENT_ORIGIN || 'http://localhost:3000');
+    // Permitir también al frontend acceder
+    res.setHeader('Access-Control-Allow-Origin', allowedOrigins.join(','));
     next();
   },
   express.static(uploadDir)
 );
 
-// Ruta de salud: prueba esto primero
+// Endpoint de salud
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// Monta routers de API *antes* de la ruta de subida
+// Montaje de rutas
 app.use('/api/login',           authRouter);
 app.use('/api/suppliers',       suppliersAuthRouter);
 app.use('/api/products',        productsRouter);
@@ -65,7 +83,7 @@ app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
 
-// **Solo** la subida de imágenes en /api/upload
+// Solo subida de imágenes en /api/upload
 app.use('/api/upload', uploadImageRouter);
 
 // 404 y error handler
@@ -75,6 +93,6 @@ app.use((err, _, res, __) => {
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
 });
 
-// Arranque
+// Levanta el servidor
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));
