@@ -1,3 +1,5 @@
+// File: backend/server.js
+
 require('dotenv').config();
 const express = require('express');
 const cors    = require('cors');
@@ -9,7 +11,8 @@ const pool = require('./db-postgres');
 
 // Routers
 const authRouter           = require('./routes/auth');
-const suppliersAuthRouter  = require('./routes/suppliersAuth');
+const suppliersAuthRouter  = require('./routes/suppliersAuth');   // OAuth AliExpress
+const suppliersRouter      = require('./routes/suppliers');
 const productsRouter       = require('./routes/products');
 const categoriesRouter     = require('./routes/categories');
 const ordersRouter         = require('./routes/orders');
@@ -17,7 +20,6 @@ const metricsRouter        = require('./routes/metrics');
 const bulkRouter           = require('./routes/bulk');
 const settingsRouter       = require('./routes/settings');
 const paymentsRouter       = require('./routes/payments');
-const suppliersRouter      = require('./routes/suppliers');
 const dropshipRouter       = require('./routes/dropship');
 const messagesRouter       = require('./routes/messages');
 const emailLogsRouter      = require('./routes/emailLogs');
@@ -27,68 +29,70 @@ const uploadImageRouter    = require('./routes/uploadImage');
 
 const app = express();
 
-// ─── CORS: lista de orígenes permitidos ────────────────────────────────
+// ─── CORS ────────────────────────────────────────────────────────────────
+// Sólo permitimos los orígenes que declares en tus env vars:
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,  // e.g. http://localhost:3000
-  process.env.FRONTEND_URL    // e.g. https://neko-shop-frontend.vercel.app
+  process.env.CLIENT_ORIGIN,  // ej. http://localhost:3000
+  process.env.FRONTEND_URL    // ej. https://neko-shop-frontend.vercel.app
 ].filter(Boolean);
 
 console.log('🔑 Allowed CORS origins:', allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
-    // si no hay origin (curl/Postman) o está en la lista, ok
+    // Sin origin (Postman, curl) o en la lista → OK
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    // si no, rechazamos
-    return callback(new Error(`CORS policy: origin ${origin} no permitido`));
+    // Si no, rechazamos
+    callback(new Error(`CORS policy: origin ${origin} no permitido`));
   }
 }));
 
-// ─── Middlewares ────────────────────────────────────────────────────────
+// ─── Middlewares ─────────────────────────────────────────────────────────
 app.use(express.json());
 
-// ─── Carpeta de estáticos para /uploads ─────────────────────────────────
+// Carpeta para subir imágenes (estático)
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-  fs.mkdirSync(uploadDir, { recursive: true });
-}
+if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use('/uploads', express.static(uploadDir));
 
-// ─── Health check ───────────────────────────────────────────────────────
+// Health check
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 
-// ─── Montaje de rutas ──────────────────────────────────────────────────
-app.use('/api/login',           authRouter);
-app.use('/api/suppliers',       suppliersAuthRouter);
-app.use('/api/products',        productsRouter);
-app.use('/api/categories',      categoriesRouter);
-app.use('/api/orders',          ordersRouter);
-app.use('/api/metrics',         metricsRouter);
-app.use('/api/bulk',            bulkRouter);
-app.use('/api/settings',        settingsRouter);
-app.use('/api/payments',        paymentsRouter);
-app.use('/api/suppliers',       suppliersRouter);
-app.use('/api/dropship',        dropshipRouter);
-app.use('/api/messages',        messagesRouter);
+// ─── Montaje de rutas ─────────────────────────────────────────────────────
+// Auth / login
+app.use('/api/login', authRouter);
+
+// OAuth AliExpress (proveedores)
+app.use('/', suppliersAuthRouter);
+
+// Resto de API
+app.use('/api/suppliers', suppliersRouter);
+app.use('/api/products',   productsRouter);
+app.use('/api/categories',  categoriesRouter);
+app.use('/api/orders',      ordersRouter);
+app.use('/api/metrics',     metricsRouter);
+app.use('/api/bulk',        bulkRouter);
+app.use('/api/settings',    settingsRouter);
+app.use('/api/payments',    paymentsRouter);
+app.use('/api/dropship',    dropshipRouter);
+app.use('/api/messages',    messagesRouter);
 app.use('/api/email-logs',      emailLogsRouter);
 app.use('/api/email-templates', emailTemplatesRouter);
 app.use('/api/newsletter',      newsletterRouter);
+app.use('/api/upload',          uploadImageRouter);
 
-// Este router contiene la ruta POST /api/products/:id/images
-// si además tienes una ruta genérica de subida la puedes poner en /api/upload
-app.use('/api', uploadImageRouter);
-
-// ─── 404 handler ───────────────────────────────────────────────────────
+// ─── Manejo de errores ────────────────────────────────────────────────────
+// 404 para rutas no encontradas
 app.use((_, res) => res.status(404).json({ error: 'Endpoint not found' }));
 
-// ─── Error handler ────────────────────────────────────────────────────
+// Captura de errores
 app.use((err, _, res, __) => {
   console.error('🔥 Error:', err.stack || err);
   res.status(err.status || 500).json({ error: err.message || 'Server Error' });
 });
 
-// ─── Levantar servidor ─────────────────────────────────────────────────
+// ─── Arranque del servidor ─────────────────────────────────────────────────
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));
