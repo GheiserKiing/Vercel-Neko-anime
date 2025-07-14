@@ -1,11 +1,11 @@
-// File: backend/routes/settings.js
+// File: NekoShop/backend/routes/settings.js
 
-const express = require("express");
-const path    = require("path");
-const fs      = require("fs");
-const multer  = require("multer");
-const cloudinary = require("../config/cloudinary"); // tu config de Cloudinary
-const router  = express.Router();
+const express     = require("express");
+const path        = require("path");
+const fs          = require("fs");
+const multer      = require("multer");
+const cloudinary  = require("../config/cloudinary"); // tu config de Cloudinary
+const router      = express.Router();
 
 const dataDir      = path.join(__dirname, "../data");
 const settingsFile = path.join(dataDir, "settings.json");
@@ -51,25 +51,27 @@ router.put("/", express.json(), (req, res) => {
  * POST /api/settings/heroImage
  * Recibe el campo 'hero' (file), lo sube a Cloudinary y devuelve su secure_url.
  */
-router.post("/heroImage", upload.single("hero"), async (req, res) => {
-  try {
+router.post(
+  "/heroImage",
+  upload.single("hero"),
+  (req, res) => {
     if (!req.file) {
       return res.status(400).json({ error: "No se subió archivo" });
     }
-    // Subimos buffer a Cloudinary
-    const result = await cloudinary.uploader.upload_stream(
+    // Subimos buffer a Cloudinary vía stream
+    const uploadStream = cloudinary.uploader.upload_stream(
       { folder: "nekoshop/heroes" },
-      (error, uploadResult) => {
-        if (error) return res.status(500).json({ error: error.message });
-        // Devolver URL pública
-        res.json({ url: uploadResult.secure_url });
+      (error, result) => {
+        if (error) {
+          console.error("Cloudinary error:", error);
+          return res.status(500).json({ error: error.message });
+        }
+        // Respondemos la URL pública
+        res.json({ url: result.secure_url });
       }
-    ).end(req.file.buffer);
-
-  } catch (err) {
-    console.error("Error en /api/settings/heroImage:", err);
-    res.status(500).json({ error: "Error subiendo a Cloudinary" });
+    );
+    uploadStream.end(req.file.buffer);
   }
-});
+);
 
 module.exports = router;
