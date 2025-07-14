@@ -1,0 +1,22 @@
+:root {
+  --color-primary: #5c007a;
+  --color-secondary: #e0c3fc;
+  --color-accent: #ffa3ef;
+  --color-bg: #faf5ff;
+  --color-text: #2e003e;
+  --radius: 12px;
+  --transition: 0.3s;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body, html, #root {
+  height: 100%;
+  font-family: 'Inter', sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}

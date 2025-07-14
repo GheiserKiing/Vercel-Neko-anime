@@ -1,0 +1,108 @@
+/* File: frontend/src/pages/category/CategoryPage.css */
+
+:root {
+  --color-primary: #c2185b;
+  --radius: 4px;
+}
+
+.cp-page {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 0 2rem 2rem;
+  background: transparent;
+  font-family: Arial, sans-serif;
+}
+
+.cp-hero {
+  position: relative;
+  width: calc(100% + 4rem);
+  margin: 0 -2rem;
+  height: 200px;
+  overflow: hidden;
+}
+
+.cp-hero-bg {
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+}
+
+.cp-title {
+  position: absolute;
+  top: 60%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: clamp(2rem, 5vw, 3rem);
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+  text-align: center;
+}
+
+.cp-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  justify-content: space-between;
+  font-size: 0.9rem;
+}
+
+.cp-breadcrumb a {
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.cp-subnav {
+  display: flex;
+  gap: 1rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cp-subnav li a {
+  color: #333;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.cp-subnav li.active a {
+  color: var(--color-primary);
+  border-bottom: 2px solid var(--color-primary);
+}
+
+.cp-sort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cp-sort select {
+  padding: 0.4rem;
+  border-radius: var(--radius);
+  border: 1px solid #ccc;
+}
+
+.cp-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Elimina el fondo blanco de cada tarjeta de producto */
+.cp-grid > * {
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Mensajes de estado */
+.cp-no-products,
+.cp-loading,
+.cp-error {
+  text-align: center;
+  padding: 2rem;
+  color: #666;
+  width: 100%;
+}

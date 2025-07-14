@@ -1,0 +1,54 @@
+/* File: frontend/src/components/Hero/Hero.css */
+
+.Hero {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+/* MOSTRAR IMAGEN SIN GRIS */
+.Hero__bg {
+  position: absolute;
+  inset: 0;
+  /* Quitamos overlay gris y blend-mode */
+  /* background-blend-mode: multiply;
+     background-color: rgba(0,0,0,0.4); */
+  background-size: cover;       /* obligatorio para cubrir */
+  background-position: center;   /* centrar la imagen */
+}
+
+.Hero__content {
+  position: relative;
+  z-index: 1;
+  max-width: 800px;
+  margin: 0 auto;
+  color: #f5f3e7;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 1rem;
+}
+
+.Hero__content h1 {
+  font-size: clamp(3rem, 7vw, 5rem);
+  margin-bottom: 0.5rem;
+}
+
+.Hero__content p {
+  font-size: clamp(1.2rem, 2.5vw, 1.8rem);
+  margin-bottom: 1rem;
+}
+
+.Hero__btn {
+  background: #ff477e;
+  color: #fff;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.Hero__btn:hover {
+  transform: translateY(-2px) scale(1.03);
+}

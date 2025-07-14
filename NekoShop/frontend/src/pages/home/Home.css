@@ -1,0 +1,129 @@
+/* File: frontend/src/pages/home/Home.css */
+
+.Home__hero {
+  position: relative;
+  height: 60vh;
+  overflow: hidden;
+}
+.Home__hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  filter: brightness(0.5);
+}
+.Home__hero-content {
+  position: relative;
+  z-index: 1;
+  color: #f5f3e7;
+  text-align: center;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 0 1rem;
+}
+.Home__hero-title {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  margin-bottom: 0.5rem;
+}
+.Home__hero-subtitle {
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  margin-bottom: 1rem;
+}
+.Home__hero-btn {
+  background: #ff477e;
+  color: #fff;
+  padding: 1rem 2rem;
+  font-size: 1.25rem;
+  border: none;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  text-decoration: none;
+}
+.Home__hero-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.Home__section {
+  padding: 2rem 1rem;
+}
+.SectionTitle {
+  font-size: 1.75rem;
+  margin-bottom: 1rem;
+}
+.home-message {
+  padding: 1rem;
+  text-align: center;
+}
+.home-message.error {
+  color: red;
+}
+
+/* Producto del Día: tamaño fijo y aura más fuerte */
+.Highlight {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  text-decoration: none;
+  color: inherit;
+  align-items: center;
+}
+.Highlight__frame {
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+.Highlight__frame--aura {
+  /* Aura más intensa y amplia */
+  box-shadow:
+    0 0 30px rgba(214, 51, 132, 0.7),
+    0 0 60px rgba(214, 51, 132, 0.5);
+}
+.Highlight__frame--fixed {
+  width: 300px;
+  height: 300px;
+  flex: 0 0 auto;
+}
+.Highlight__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.Highlight__placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  font-size: 2rem;
+}
+.Highlight__info {
+  flex: 1 1 auto;
+}
+.Highlight__title {
+  margin: 0 0 0.5rem;
+}
+.Highlight__desc {
+  margin: 0 0 1rem;
+}
+.Highlight__btn {
+  background: #d63384;
+  color: #f5f3e7;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+/* RecientesCarousel pequeño */
+.RecientesCarousel {
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+  position: relative;
+  padding: 20px 0;
+  text-align: center;
+}

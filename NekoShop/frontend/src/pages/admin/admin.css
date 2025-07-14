@@ -1,0 +1,206 @@
+/* File: frontend/src/pages/admin/admin.css */
+
+/* Wrapper principal */
+.admin-wrapper-pro {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1rem;
+  font-family: "Segoe UI", Roboto, sans-serif;
+  background: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Título */
+.admin-wrapper-pro h1 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+  color: #333;
+}
+
+/* Formulario */
+.form-pro {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.form-pro h2 {
+  margin-bottom: 1rem;
+  color: #444;
+}
+.grid-pro {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+.grid-pro input,
+.grid-pro textarea {
+  width: 100%;
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.95rem;
+}
+.grid-pro textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+/* Botones del formulario */
+.btns-pro {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+.btns-pro button {
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.btns-pro button:first-child {
+  background: #007bff;
+  color: #fff;
+}
+.btns-pro button:first-child:hover {
+  background: #0069d9;
+}
+.btns-pro button:last-child {
+  background: #6c757d;
+  color: #fff;
+}
+.btns-pro button:last-child:hover {
+  background: #5a6268;
+}
+
+/* Sección de imágenes */
+.images-pro {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 6px;
+  margin-bottom: 2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.images-pro h3,
+.images-pro h4 {
+  margin-bottom: 0.8rem;
+  color: #444;
+}
+.thumbs-pro {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+}
+.thumb-item {
+  position: relative;
+}
+.thumb-item img {
+  width: 100px;
+  height: 100px;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+}
+.thumb-item button {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: #dc3545;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+}
+.thumb-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100px;
+  height: 100px;
+  border: 2px dashed #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #666;
+  font-size: 0.9rem;
+  text-align: center;
+}
+.thumb-add input {
+  display: none;
+}
+
+/* Previsualización múltiple */
+.preview-pro {
+  margin-top: 0.5rem;
+}
+.preview-pro img {
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 4px;
+  opacity: 0.7;
+}
+
+/* Mensaje de estado */
+.status-pro {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+/* Tabla de productos */
+.table-pro {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 6px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+.table-pro th,
+.table-pro td {
+  padding: 0.8rem;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+  font-size: 0.95rem;
+}
+.table-pro th {
+  background: #f1f1f1;
+  color: #555;
+}
+.table-pro tr:hover {
+  background: #fafafa;
+}
+.table-pro button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.1rem;
+}
+
+/* MINIATURA ACTIVA: borde coloreado */
+.thumb-item.active-thumb img {
+  border: 2px solid #007bff; /* este cambio es para que la portada tenga un borde azul */
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid-pro {
+    grid-template-columns: 1fr;
+  }
+  .thumbs-pro {
+    justify-content: center;
+  }
+}

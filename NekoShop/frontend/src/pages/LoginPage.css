@@ -1,0 +1,50 @@
+/* File: NekoShop/NekoShop/frontend/src/pages/admin/LoginPage.css */
+.login-container {
+  max-width: 360px;
+  margin: 120px auto;
+  padding: 24px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  font-family: "Arial", sans-serif;
+  text-align: center;
+}
+.login-container h1 {
+  margin-bottom: 20px;
+  color: #333;
+}
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.login-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+  color: #555;
+}
+.login-form input {
+  margin-top: 4px;
+  padding: 8px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.login-error {
+  color: #b00020;
+  font-size: 0.9rem;
+}
+.login-form button {
+  padding: 10px;
+  font-size: 1rem;
+  background: #0070ba;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.login-form button:hover {
+  background: #005fa3;
+}

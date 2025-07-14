@@ -1,0 +1,80 @@
+.orders-page {
+  padding: 1rem;
+}
+
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.orders-table th,
+.orders-table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+}
+
+.orders-table th {
+  background: #f0f0f0;
+}
+
+.orders-table button {
+  margin-right: 0.5rem;
+  padding: 0.3rem 0.6rem;
+  cursor: pointer;
+}
+
+/* ─── ESTILO PARA PEDIDOS RECIÉN LLEGADOS ───────────────────────────────── */
+.orders-table tr.new-order {
+  background-color: #ffffe0; /* este cambio resalta con fondo amarillo suave */
+  transition: background-color 2s ease; /* este cambio suaviza la transición al desaparecer */
+}
+
+/* Opcional: animación de parpadeo inicial */
+@keyframes highlight {
+  0% {
+    background-color: #ffffe0;
+  }
+  50% {
+    background-color: #fff;
+  }
+  100% {
+    background-color: #ffffe0;
+  }
+}
+.orders-table tr.new-order {
+  animation: highlight 1s ease-in-out 2; /* este cambio anima el parpadeo dos veces */
+}
+
+/* ─── ESTILOS PARA MODAL (si usas) ─────────────────────────────────────── */
+.orders-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.orders-modal-content {
+  background: #fff;
+  padding: 1rem;
+  border-radius: 4px;
+  width: 90%;
+  max-width: 400px;
+}
+
+.orders-modal-content h3 {
+  margin-top: 0;
+}
+
+.orders-modal-content ul {
+  list-style: none;
+  padding: 0;
+}
+
+.orders-modal-content li {
+  margin-bottom: 0.3rem;
+}

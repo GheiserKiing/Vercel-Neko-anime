@@ -1,0 +1,119 @@
+/* File: frontend/src/pages/figuras/figuras.css */
+.figuras {
+  background-color: #ffffff;
+  color: #333333;
+  font-family: Arial, sans-serif;
+}
+
+/* HERO “Figuras” */
+.figuras__hero {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background-color: #800080;
+  background-size: cover;
+  background-position: center;
+}
+
+.figuras__hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.figuras__hero-title {
+  color: #ffffff;
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.figuras__hero-subtitle {
+  color: #f2f2f2;
+  font-size: 18px;
+  max-width: 600px;
+}
+
+/* Controles: buscador + filtros */
+.figuras__controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1200px;
+  margin: 24px auto;
+  padding: 0 20px;
+}
+
+/* SECCIÓN PRODUCTOS */
+.figuras__productos {
+  padding: 40px 20px;
+  background-color: #f9f4eb;
+}
+
+.figuras__section-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.figuras__productos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.no-results {
+  text-align: center;
+  color: #666;
+  font-size: 1.1rem;
+  margin-top: 40px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .figuras__productos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .figuras__hero {
+    height: 200px;
+  }
+  .figuras__hero-title {
+    font-size: 28px;
+  }
+  .figuras__hero-subtitle {
+    font-size: 16px;
+  }
+  .figuras__controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .figuras__productos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .figuras__hero {
+    height: 180px;
+  }
+  .figuras__hero-title {
+    font-size: 24px;
+  }
+  .figuras__hero-subtitle {
+    font-size: 14px;
+  }
+}

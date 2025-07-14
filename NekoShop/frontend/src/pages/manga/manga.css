@@ -1,0 +1,100 @@
+/* ===== Estilos para la página Manga ===== */
+
+.manga {
+  background-color: #ffffff;
+  color: #333333;
+  font-family: Arial, sans-serif;
+}
+
+/* ===== HERO “Manga” ===== */
+.manga__hero {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  background-color: #ff69b4; /* Rosa intenso como fondo hero */
+  background-size: cover;
+  background-position: center;
+}
+
+.manga__hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 20px;
+}
+
+.manga__hero-title {
+  color: #ffffff;
+  font-size: 36px;
+  margin-bottom: 10px;
+}
+
+.manga__hero-subtitle {
+  color: #f2f2f2;
+  font-size: 18px;
+  max-width: 600px;
+}
+
+/* ===== SECCIÓN PRODUCTOS ===== */
+.manga__productos {
+  padding: 40px 20px;
+  background-color: #f9f4eb; /* Crema suave */
+}
+
+.manga__section-title {
+  text-align: center;
+  font-size: 28px;
+  margin-bottom: 30px;
+  font-weight: bold;
+  color: #333333;
+}
+
+.manga__productos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 1024px) {
+  .manga__productos-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .manga__hero {
+    height: 200px;
+  }
+  .manga__hero-title {
+    font-size: 28px;
+  }
+  .manga__hero-subtitle {
+    font-size: 16px;
+  }
+  .manga__productos-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .manga__hero {
+    height: 180px;
+  }
+  .manga__hero-title {
+    font-size: 24px;
+  }
+  .manga__hero-subtitle {
+    font-size: 14px;
+  }
+}

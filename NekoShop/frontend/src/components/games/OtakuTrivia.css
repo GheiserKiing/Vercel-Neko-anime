@@ -1,0 +1,55 @@
+/* File: frontend/src/components/games/OtakuTrivia.css */
+.trivia {
+  max-width: 480px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #f0f4ff;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-family: sans-serif;
+  text-align: center;
+}
+.trivia h1 {
+  color: #1f3c88;
+}
+.progress {
+  color: #555;
+  margin-bottom: 12px;
+}
+.question {
+  font-size: 1.1rem;
+  margin-bottom: 16px;
+  color: #333;
+}
+.opt-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.opt {
+  padding: 12px;
+  background: #fff;
+  border: 2px solid #1f3c88;
+  border-radius: 6px;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    color 0.2s;
+}
+.opt.sel {
+  background: #1f3c88;
+  color: #fff;
+}
+.trivia-btn {
+  padding: 10px 20px;
+  background: #1f3c88;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.trivia-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

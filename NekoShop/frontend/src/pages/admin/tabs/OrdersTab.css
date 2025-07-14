@@ -1,0 +1,24 @@
+/* File: frontend/src/pages/admin/tabs/OrdersTab.css */
+.orders-tab {
+  padding: 1rem;
+}
+.orders-table-wrapper {
+  overflow-x: auto;
+}
+.orders-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.orders-table th,
+.orders-table td {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  white-space: nowrap;
+}
+.orders-table th {
+  background: #f5f5f5;
+  text-align: left;
+}
+.orders-error {
+  color: red;
+}

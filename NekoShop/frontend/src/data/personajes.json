@@ -1,0 +1,43 @@
+
+[
+  {
+    "name": "Naruto Uzumaki",
+    "anime": "Naruto",
+    "gender": "Masculino",
+    "affiliation": "Konoha",
+    "jutsuTypes": ["Ninjutsu", "Taijutsu"],
+    "kekkeiGenkai": "None",
+    "natureTypes": ["Viento"],
+    "attributes": ["Jinchūriki"],
+    "debutArc": "Exámenes Chūnin",
+    "vitalStatus": "Vivo",
+    "occupation": "Hokage"
+  },
+  {
+    "name": "Sasuke Uchiha",
+    "anime": "Naruto",
+    "gender": "Masculino",
+    "affiliation": "Konoha",
+    "jutsuTypes": ["Ninjutsu", "Genjutsu", "Taijutsu"],
+    "kekkeiGenkai": "Sharingan",
+    "natureTypes": ["Rayo", "Fuego"],
+    "attributes": ["Uchiha"],
+    "debutArc": "Exámenes Chūnin",
+    "vitalStatus": "Vivo",
+    "occupation": "Ninja Errante"
+  },
+  {
+    "name": "Gaara",
+    "anime": "Naruto",
+    "gender": "Masculino",
+    "affiliation": "Suna",
+    "jutsuTypes": ["Ninjutsu", "Genjutsu"],
+    "kekkeiGenkai": "Shukaku",
+    "natureTypes": ["Arena"],
+    "attributes": ["Jinchūriki"],
+    "debutArc": "Exámenes Chūnin",
+    "vitalStatus": "Vivo",
+    "occupation": "Kazekage"
+  }
+ 
+]

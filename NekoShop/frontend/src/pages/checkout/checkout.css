@@ -1,0 +1,9 @@
+/* File: frontend/src/pages/checkout/checkout.css */
+
+.checkout-page {
+  background: #f9f9f9;
+}
+
+.checkout-btn {
+  cursor: pointer;
+}

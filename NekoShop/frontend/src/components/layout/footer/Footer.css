@@ -1,0 +1,172 @@
+/* File: frontend/src/components/layout/footer/Footer.css */
+
+/* ===== Estilos para Footer compacto con políticas encima de la ralla ===== */
+
+.footer {
+  background-color: #f9f4eb; /* Crema suave */
+  color: #333333;
+  font-family: Arial, sans-serif;
+  margin-top: 40px; /* Para que no quede pegado al contenido */
+  border-top: 3px solid #e0d4c8; /* Borde superior ligeramente más marcado */
+}
+
+/* Contenedor principal de columnas */
+.footer__container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px 20px; /* Padding reducido para no ser tan alto */
+}
+
+.footer__col {
+  display: flex;
+  flex-direction: column;
+}
+
+.footer__title {
+  font-size: 16px;
+  margin-bottom: 12px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.footer__text {
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 12px;
+}
+
+.footer__links {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px; /* Espacio inferior antes de siguiente columna */
+}
+
+.footer__link {
+  text-decoration: none;
+  color: #333333;
+  font-size: 13px;
+  margin-bottom: 8px;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.footer__link:hover {
+  color: #800080; /* Morado al hover */
+}
+
+.footer__social {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.footer__social-link {
+  color: #333333;
+  transition: color 0.2s ease;
+}
+
+.footer__social-link:hover {
+  color: #800080; /* Morado al hover */
+}
+
+.footer__social-icon {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.footer__form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.footer__input {
+  padding: 8px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 13px;
+  outline: none;
+}
+
+.footer__input:focus {
+  border-color: #800080; /* Morado al focus */
+}
+
+.footer__button {
+  background-color: #ff69b4; /* Rosa */
+  color: #ffffff;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.footer__button:hover {
+  background-color: #e05597; /* Rosa más oscuro */
+}
+
+/* Políticas en línea justo encima de la línea divisoria */
+.footer__policies-inline {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin: 20px 0 0; /* Separación con las columnas */
+}
+
+.footer__policy-link {
+  text-decoration: none;
+  color: #333333;
+  font-size: 12px;
+  transition: color 0.2s ease;
+}
+
+.footer__policy-link:hover {
+  color: #800080; /* Morado al hover */
+}
+
+.footer__bottom {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 10px 20px;
+  text-align: center;
+}
+
+.footer__divider {
+  border: none;
+  height: 1px;
+  background-color: #dddddd;
+  margin-bottom: 8px;
+}
+
+.footer__copy {
+  font-size: 11px;
+  color: #666666;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .footer__container {
+    gap: 20px;
+    padding: 30px 20px 20px;
+  }
+  .footer__title {
+    font-size: 14px;
+  }
+  .footer__text,
+  .footer__link,
+  .footer__copy,
+  .footer__policy-link {
+    font-size: 12px;
+  }
+  .footer__social-icon {
+    width: 18px;
+    height: 18px;
+  }
+}

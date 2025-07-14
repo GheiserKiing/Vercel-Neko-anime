@@ -1,0 +1,51 @@
+/* frontend/src/pages/exito/exito.css */
+
+.exito-page {
+  background-color: #fafafa;
+  height: calc(100vh - 80px); /* restando header/footer estimados */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.exito-card {
+  background: #fff;
+  border-radius: 10px;
+  padding: 40px 30px;
+  max-width: 500px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.exito-card h1 {
+  font-size: 2rem;
+  color: #702963;
+  margin-bottom: 20px;
+  text-shadow: 1px 1px 2px #ffdce6;
+}
+
+.exito-card p {
+  font-size: 1rem;
+  color: #555;
+  margin-bottom: 30px;
+}
+
+.btn-exito-home {
+  display: inline-block;
+  background-color: #ffb3cc;
+  color: #702963;
+  padding: 12px 24px;
+  border-radius: 8px;
+  text-decoration: none;
+  font-size: 1rem;
+  transition:
+    background-color 0.2s ease,
+    transform 0.1s ease;
+}
+
+.btn-exito-home:hover {
+  background-color: #ff99bb;
+  transform: translateY(-2px);
+}

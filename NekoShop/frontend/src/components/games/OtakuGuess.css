@@ -1,0 +1,88 @@
+/* File: frontend/src/components/games/OtakuGuess.css */
+.otaku-guess {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 20px;
+  background: #fafafa;
+  border-radius: 8px;
+  font-family: sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+.otaku-guess h1 {
+  color: #e60073;
+}
+.subtitle {
+  color: #555;
+  margin-bottom: 16px;
+}
+.grid {
+  display: grid;
+  gap: 6px;
+}
+.row {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(40px, 1fr));
+  gap: 6px;
+}
+.cell {
+  height: 40px;
+  line-height: 40px;
+  font-weight: bold;
+  font-size: 1.2rem;
+  background: #e0e0e0;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.cell.correct {
+  background: #6aaa64;
+  color: #fff;
+}
+.cell.present {
+  background: #c9b458;
+  color: #fff;
+}
+.cell.absent {
+  background: #787c7e;
+  color: #fff;
+}
+.input-row {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+}
+.guess-input {
+  width: 60%;
+  padding: 8px;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.guess-btn {
+  padding: 8px 16px;
+  background: #e60073;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.guess-btn:hover {
+  background: #cc005f;
+}
+.message {
+  margin-top: 16px;
+  color: #333;
+}
+.banner {
+  margin-top: 24px;
+  padding: 16px;
+  background: #ffe4f0;
+  border-radius: 6px;
+  border: 1px solid #e60073;
+}
+.banner h2 {
+  margin: 0 0 8px;
+  color: #e60073;
+}

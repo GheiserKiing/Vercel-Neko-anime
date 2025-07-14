@@ -1,0 +1,110 @@
+/* File: frontend/src/pages/producto/producto.css */
+
+:root {
+  --rosa: #e91e63;
+  --morado: #4a148c;
+  --texto: #333;
+  --sep: #aaa;
+}
+
+/* Ajuste bajo header */
+.prod-wrapper {
+  padding: 100px 20px 20px;
+  background: transparent;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Migas de pan */
+.breadcrumb {
+  font-size: 12px;
+  color: var(--sep);
+  margin-bottom: 16px;
+  white-space: nowrap;
+}
+.breadcrumb a { color: var(--texto); text-decoration: none; }
+.breadcrumb .sep { margin: 0 4px; }
+.breadcrumb .current { color: var(--texto); font-weight: bold; }
+
+/* Layout: alinea info al nivel del top de imagen */
+.detail-container {
+  display: flex;
+  align-items: flex-start;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* Galería */
+.gallery { flex: 1; }
+.thumb-strip { display: flex; gap: 8px; margin-bottom: 8px; }
+.thumb {
+  width: 80px; height: 96px;
+  object-fit: cover; border:2px solid #ddd;
+  border-radius:4px; cursor:pointer;
+}
+.thumb.active { border-color: var(--rosa); }
+.main-image {
+  max-width: 600px; aspect-ratio:1610/1920;
+  overflow:hidden; border-radius:6px;
+}
+.main-image img { width:100%; height:100%; object-fit:cover; }
+
+/* Panel info */
+.info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-top: calc(96px + 8px); /* baja título a la altura de la foto */
+}
+.prod-title {
+  font-size: 36px;
+  color: var(--morado);
+  margin: 0;
+}
+.price { font-size:26px; color:var(--rosa); margin:0; }
+.quantity { display:flex; gap:8px; }
+.quantity input {
+  width:60px; padding:4px; border:1px solid #ccc; border-radius:4px;
+}
+
+/* Botones */
+.actions { display:flex; gap:8px; }
+.actions button {
+  padding:10px 16px; border:none; border-radius:4px;
+  font-size:14px; cursor:pointer; transition:transform .1s;
+}
+.actions button:active { transform:scale(0.95); }
+.buy-now { background:var(--rosa); color:#fff; }
+.add-cart { background:var(--morado); color:#fff; }
+.favorite { background:transparent; color:var(--morado); }
+
+/* Descripción justo bajo botones */
+.description {
+  margin-top: 16px;
+}
+.description p { color:var(--texto); line-height:1.6; margin:0; }
+
+/* Sección También te puede interesar */
+.related { margin-bottom:24px; }
+.related h2 { font-size:24px; color:var(--morado); margin-bottom:8px; }
+.related-row { display:flex; gap:12px; overflow-x:auto; }
+.rel-card { min-width:180px; text-decoration:none; color:inherit; }
+.rel-card img {
+  width:180px; height:220px; object-fit:cover; border-radius:4px;
+}
+.rel-info { text-align:center; }
+.rel-name, .rel-price { margin:4px 0; font-size:14px; }
+
+/* Valoraciones sin título extra */
+.reviews {
+  margin-bottom:40px;
+}
+
+/* Modal */
+.modal {
+  position:fixed; inset:0;
+  background:rgba(0,0,0,0.8);
+  display:flex; align-items:center; justify-content:center;
+}
+.modal img { max-width:90%; max-height:90%; border-radius:6px; }

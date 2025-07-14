@@ -1,0 +1,12 @@
+/* src/components/TopVentas/TopVentas.css */
+
+/* TopVentas uses the same carousel styles, only override specific rules here */
+
+.TopVentas {
+  margin-top: 3rem;
+}
+
+/* Hide scrollbar for top ventas track */
+.TopVentas .RecientesCarousel__track::-webkit-scrollbar {
+  display: none;
+}

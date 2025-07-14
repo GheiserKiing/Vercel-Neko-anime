@@ -1,0 +1,28 @@
+[
+  {
+    "id": 1,
+    "type": "hero",
+    "data": {
+      "title": "¡Bienvenido a NekoShop Anime!",
+      "subtitle": "Tu tienda visual favorita de productos otaku",
+      "imageUrl": "/logo192.png"
+    }
+  },
+  {
+    "id": 2,
+    "type": "text",
+    "data": {
+      "text": "Descubre productos únicos inspirados en tus animes favoritos. ¡Colecciona figuras, posters y mucho más!"
+    }
+  },
+  {
+    "id": 3,
+    "type": "product",
+    "data": {
+      "name": "Figura Goku Ultra Instinct",
+      "description": "Figura de acción de Goku en su forma Ultra Instinct. Altura: 20cm.",
+      "price": "$39.99",
+      "imageUrl": "/logo512.png"
+    }
+  }
+]

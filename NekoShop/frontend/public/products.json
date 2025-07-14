@@ -1,0 +1,223 @@
+[
+  {
+    "id": "101",
+    "name": "Funko Pop Goku",
+    "description": "Figura Funko Pop de Goku en Super Saiyajin. ¡Edición coleccionista con aura translúcida!",
+    "price": "$24.99",
+    "imageUrl": "/images/goku1.jpg",
+    "images": [
+      "/images/goku1.jpg",
+      "/images/goku2.jpg",
+      "/images/goku3.jpg"
+    ],
+    "category": "figuras",
+    "stock": 12,
+    "details": [
+      "Altura: 10 cm",
+      "Material: Vinilo",
+      "Edición limitada",
+      "Apto para mayores de 14 años"
+    ]
+  },
+  {
+    "id": "102",
+    "name": "Figure Luffy Gear 4",
+    "description": "Figura articulada de Monkey D. Luffy en Gear 4 de One Piece. Base incluida para mayor estabilidad.",
+    "price": "$49.99",
+    "imageUrl": "/images/luffy1.jpg",
+    "images": [
+      "/images/luffy1.jpg",
+      "/images/luffy2.jpg",
+      "/images/luffy3.jpg"
+    ],
+    "category": "figuras",
+    "stock": 5,
+    "details": [
+      "Altura: 18 cm",
+      "Material: PVC resistente",
+      "Articulaciones flexibles en brazos",
+      "Incluye base transparente con logo de One Piece"
+    ]
+  },
+  {
+    "id": "103",
+    "name": "Figura Asuka Langley",
+    "description": "Figura de Asuka Langley Soryu de Neon Genesis Evangelion en pose de batalla.",
+    "price": "$39.99",
+    "imageUrl": "/images/asuka1.jpg",
+    "images": [
+      "/images/asuka1.jpg",
+      "/images/asuka2.jpg"
+    ],
+    "category": "figuras",
+    "stock": 8,
+    "details": [
+      "Altura: 17 cm",
+      "Material: PVC ultrarresistente",
+      "Pintura mate con detalles en colores vibrantes",
+      "Base con diseño de Eva‑02"
+    ]
+  },
+  {
+    "id": "104",
+    "name": "Figura Kirito Espada Negra",
+    "description": "Figura de Kirito con su espada negra de Sword Art Online. Incluye stand temático.",
+    "price": "$29.99",
+    "imageUrl": "/images/kirito1.jpg",
+    "images": [
+      "/images/kirito1.jpg",
+      "/images/kirito2.jpg"
+    ],
+    "category": "figuras",
+    "stock": 10,
+    "details": [
+      "Altura: 16 cm",
+      "Material: Resin PVC con acabado mate",
+      "Espada desmontable",
+      "Base redonda con logo de Sword Art Online"
+    ]
+  },
+  {
+    "id": "201",
+    "name": "Manga One Piece Vol. 1",
+    "description": "Primer volumen del Manga One Piece en edición coleccionista, papel de alta calidad.",
+    "price": "$9.99",
+    "imageUrl": "/images/onepiece1.jpg",
+    "images": [
+      "/images/onepiece1.jpg"
+    ],
+    "category": "manga",
+    "stock": 25,
+    "details": [
+      "Edición en tapa blanda",
+      "Páginas a color en portada",
+      "Idiomas: Español",
+      "Papel de 80 g/m²"
+    ]
+  },
+  {
+    "id": "202",
+    "name": "Manga Naruto Vol. 5",
+    "description": "Quinto volumen del Manga Naruto en español, capítulos del 40 al 47.",
+    "price": "$8.99",
+    "imageUrl": "/images/naruto5.jpg",
+    "images": [
+      "/images/naruto5.jpg"
+    ],
+    "category": "manga",
+    "stock": 30,
+    "details": [
+      "Edición edición 10º aniversario",
+      "Páginas interiores en blanco y negro",
+      "Encuadernación resistente",
+      "Idioma: Español"
+    ]
+  },
+  {
+    "id": "203",
+    "name": "Manga Attack on Titan Vol. 3",
+    "description": "Tercer volumen de Shingeki no Kyojin (Attack on Titan) con portada con acabado gloss.",
+    "price": "$10.99",
+    "imageUrl": "/images/aot3.jpg",
+    "images": [
+      "/images/aot3.jpg"
+    ],
+    "category": "manga",
+    "stock": 18,
+    "details": [
+      "Formato: 13 × 18 cm",
+      "Capítulos del 13 al 20",
+      "Tapa dura con relieve",
+      "Idioma: Español"
+    ]
+  },
+  {
+    "id": "204",
+    "name": "Manga My Hero Academia Vol. 2",
+    "description": "Segundo volumen de Boku no Hero Academia, incluye bocetos del autor.",
+    "price": "$9.49",
+    "imageUrl": "/images/mha2.jpg",
+    "images": [
+      "/images/mha2.jpg"
+    ],
+    "category": "manga",
+    "stock": 22,
+    "details": [
+      "Incluye bocetos de Kohei Horikoshi",
+      "Páginas interiores en blanco y negro",
+      "Tapa blanda con fuelle",
+      "Idioma: Español"
+    ]
+  },
+  {
+    "id": "301",
+    "name": "Llavero Naruto",
+    "description": "Llavero metálico de Naruto Uzumaki con acabado esmaltado resistente.",
+    "price": "$4.99",
+    "imageUrl": "/images/llavero_naruto.jpg",
+    "images": [
+      "/images/llavero_naruto.jpg"
+    ],
+    "category": "accesorios",
+    "stock": 50,
+    "details": [
+      "Material: Metal zincado",
+      "Medidas: 4 × 4 cm",
+      "Anilla resistente de acero inoxidable"
+    ]
+  },
+  {
+    "id": "302",
+    "name": "Póster Attack on Titan",
+    "description": "Póster de 60×40 cm de Attack on Titan impreso en papel fotográfico.",
+    "price": "$5.99",
+    "imageUrl": "/images/aot_poster.jpg",
+    "images": [
+      "/images/aot_poster.jpg"
+    ],
+    "category": "accesorios",
+    "stock": 40,
+    "details": [
+      "Tamaño: 60 × 40 cm",
+      "Material: Papel fotográfico 200 g/m²",
+      "Impresión full‑color",
+      "Sin marco"
+    ]
+  },
+  {
+    "id": "303",
+    "name": "Camiseta Saitama",
+    "description": "Camiseta oficial de One Punch Man (Saitama), 100 % algodón.",
+    "price": "$19.99",
+    "imageUrl": "/images/saitama_shirt.jpg",
+    "images": [
+      "/images/saitama_shirt.jpg"
+    ],
+    "category": "accesorios",
+    "stock": 35,
+    "details": [
+      "Composición: 100 % algodón",
+      "Talla: M (puede ajustar tallas en CSS)",
+      "Estampado serigráfico",
+      "Color: Blanco con logo en negro"
+    ]
+  },
+  {
+    "id": "304",
+    "name": "Gorra My Hero Academia",
+    "description": "Gorra bordada con el logo de My Hero Academia, ajustable talla única.",
+    "price": "$14.99",
+    "imageUrl": "/images/mha_cap.jpg",
+    "images": [
+      "/images/mha_cap.jpg"
+    ],
+    "category": "accesorios",
+    "stock": 28,
+    "details": [
+      "Material: Algodón 100 %",
+      "Talla única ajustable",
+      "Logo bordado en 3D",
+      "Visera curva"
+    ]
+  }
+]

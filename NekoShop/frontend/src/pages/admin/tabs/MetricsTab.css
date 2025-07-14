@@ -1,0 +1,13 @@
+/* File: NekoShop/NekoShop/frontend/src/pages/admin/tabs/MetricsTab.css */
+.metrics-tab {
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+.metrics-tab h2 {
+  margin-bottom: 16px;
+  color: #333;
+}
+.metrics-tab canvas {
+  width: 100% !important;
+  height: 300px !important;
+}

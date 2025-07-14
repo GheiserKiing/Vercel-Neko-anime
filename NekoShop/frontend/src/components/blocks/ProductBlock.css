@@ -1,0 +1,99 @@
+/* File: src/components/blocks/ProductBlock.css */
+
+/* Contenedor principal: ocupa siempre el 100% del ancho del padre */
+.pg-card.kawaii {
+  display: block;
+  width: 100%;
+  text-decoration: none;
+  color: inherit;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+/* Elevación al hover */
+.pg-card.kawaii:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* Wrapper de la imagen: ratio 1:1 */
+.pg-image-wrap.kawaii-bg {
+  position: relative;
+  width: 100%;
+  padding-top: 100%;  /* ratio cuadrado */
+  background: #f0f0f0;
+}
+
+/* Imagen ocupa todo el espacio del wrap */
+.pg-image.kawaii-img {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  object-fit: cover;
+}
+
+/* Placeholder (cuando no hay imagen) */
+.pg-placeholder.kawaii-placeholder {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #999;
+}
+
+/* Información: debajo de la imagen, ocupa 100% y altura automática */
+.pg-info.kawaii-info {
+  padding: 0.75rem;
+  text-align: center;
+}
+
+.pg-title.kawaii-title {
+  font-size: 1rem;
+  margin: 0 0 0.5rem;
+  line-height: 1.2;
+  color: #333;
+}
+
+.pg-price.kawaii-price {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: #d63384;
+  margin: 0;
+}
+
+/* Overlay de acciones (wishlist/carrito) */
+.pg-overlay.kawaii-overlay {
+  position: absolute;
+  top: 8px; right: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+.pg-card.kawaii:hover .pg-overlay.kawaii-overlay {
+  opacity: 1;
+}
+
+/* Botones de overlay */
+.pg-btn.kawaii-cart,
+.pg-btn.kawaii-wish {
+  background: rgba(255,255,255,0.8);
+  border: none;
+  border-radius: 50%;
+  padding: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.pg-btn.kawaii-cart:hover,
+.pg-btn.kawaii-wish:hover {
+  transform: scale(1.1);
+}
+.pg-btn.kawaii-wish.active {
+  color: #d63384;
+}
