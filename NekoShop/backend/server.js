@@ -6,26 +6,31 @@ const cors    = require("cors");
 const path    = require("path");
 const fs      = require("fs");
 
-// PostgreSQL pool (o tu conexión)
+// Tu conexión a PostgreSQL
 const pool = require("./db-postgres");
 
 const app = express();
 
 // ─── CORS ────────────────────────────────────────────────────────────────
-// Lee orígenes desde .env
-const clientOrigin    = process.env.CLIENT_ORIGIN;              // ej. http://localhost:3000
-const rawFrontends    = process.env.FRONTEND_URL || "";         // ej. "https://neko-shop-frontend.vercel.app,https://otro.vercel.app"
-const frontendOrigins = rawFrontends.split(",").map(s => s.trim()).filter(Boolean);
+// CLIENT_ORIGIN = "http://localhost:3000"
+// FRONTEND_URL = "https://neko-shop-frontend.vercel.app,https://otro-preview.vercel.app"
+const clientOrigin = process.env.CLIENT_ORIGIN || "";
+const rawFrontends = process.env.FRONTEND_URL    || "";
+const frontendOrigins = rawFrontends
+  .split(",")
+  .map(s => s.trim())
+  .filter(Boolean);
 
-const allowedOrigins = [ clientOrigin, ...frontendOrigins ].filter(Boolean);
+const allowedOrigins = [ clientOrigin, ...frontendOrigins ]
+  .filter(Boolean);
 
 console.log("🔑 Allowed CORS origins:", allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
     // 1) Sin origin (Postman, server-to-server): OK
-    // 2) Coincide exactamente con alguno de los permitidos: OK
-    // 3) Termina en ".vercel.app" (previews y prod en Vercel): OK
+    // 2) Origin exactamente en allowedOrigins: OK
+    // 3) Origin termina en ".vercel.app": OK (producción + previews)
     if (
       !origin ||
       allowedOrigins.includes(origin) ||
@@ -40,23 +45,18 @@ app.use(cors({
 // ─── Middlewares ─────────────────────────────────────────────────────────
 app.use(express.json());
 
-// Carpeta estática para uploads
+// Carpeta estática para imágenes subidas
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(uploadDir));
 
 // ─── Health checks ────────────────────────────────────────────────────────
-// Para Render / health monitor
 app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
-// Local (por compatibilidad)
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
-// ─── Montaje de rutas ─────────────────────────────────────────────────────
-// Auth / login
+// ─── Rutas ────────────────────────────────────────────────────────────────
 app.use("/api/login",           require("./routes/auth"));
-// OAuth AliExpress
-app.use("/",                    require("./routes/suppliersAuth"));
-// Resto de la API
+app.use("/",                     require("./routes/suppliersAuth"));
 app.use("/api/suppliers",       require("./routes/suppliers"));
 app.use("/api/products",        require("./routes/products"));
 app.use("/api/categories",      require("./routes/categories"));
