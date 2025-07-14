@@ -12,21 +12,26 @@ const pool = require("./db-postgres");
 const app = express();
 
 // ─── CORS ────────────────────────────────────────────────────────────────
-// Sólo estos orígenes (de tu .env)
-const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,  // ej. http://localhost:3000
-  process.env.FRONTEND_URL    // ej. https://neko-shop-frontend.vercel.app
-].filter(Boolean);
+// Leemos CLIENT_ORIGIN (local) y FRONTEND_URL (producción, puede tener varios separados por coma)
+const clientOrigin   = process.env.CLIENT_ORIGIN;             // e.g. http://localhost:3000
+const rawFrontends   = process.env.FRONTEND_URL || "";        // e.g. "https://dom1,https://dom2"
+const frontendOrigins = rawFrontends
+  .split(",")                         // parte por comas
+  .map(s => s.trim())                 // quita espacios y saltos
+  .filter(Boolean);                   // elimina cadenas vacías
+
+const allowedOrigins = [ clientOrigin, ...frontendOrigins ]
+  .filter(Boolean);
 
 console.log("🔑 Allowed CORS origins:", allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
+    // Si no viene origin (Postman, server-to-server) o está en la lista → OK
     if (!origin || allowedOrigins.includes(origin)) {
-      // Sin origin (postman) o match → OK
       return callback(null, true);
     }
-    // Si no, bloquea
+    // Si no está permitido, devolvemos error de CORS
     callback(new Error(`CORS policy: origin ${origin} not allowed`));
   }
 }));
@@ -40,17 +45,17 @@ if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(uploadDir));
 
 // ─── Health checks ────────────────────────────────────────────────────────
-// Para Render / health monitor
+// Render-friendly
 app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
-// Local (por compatibilidad)
+// Compatibilidad local
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
 
 // ─── Montaje de rutas ─────────────────────────────────────────────────────
-// Auth / login
+// Login / auth
 app.use("/api/login",           require("./routes/auth"));
-// OAuth AliExpress
+// AliExpress OAuth (si lo tienes así)
 app.use("/",                    require("./routes/suppliersAuth"));
-// Resto de la API
+// API principal
 app.use("/api/suppliers",       require("./routes/suppliers"));
 app.use("/api/products",        require("./routes/products"));
 app.use("/api/categories",      require("./routes/categories"));
