@@ -6,7 +6,7 @@ const cors    = require("cors");
 const path    = require("path");
 const fs      = require("fs");
 
-// Si usas PostgreSQL
+// Pool de Postgres
 const pool = require("./db-postgres");
 
 // Routers
@@ -30,20 +30,17 @@ const uploadImageRouter    = require("./routes/uploadImage");
 const app = express();
 
 // ─── CORS ────────────────────────────────────────────────────────────────
-// Sólo permitimos los orígenes que declares en tus env vars:
 const allowedOrigins = [
-  process.env.CLIENT_ORIGIN,   // ej. http://localhost:3000
-  process.env.FRONTEND_URL     // ej. https://tu-frontend.vercel.app
+  process.env.CLIENT_ORIGIN,   // http://localhost:3000
+  process.env.FRONTEND_URL     // https://tu-frontend.vercel.app
 ].filter(Boolean);
 console.log("🔑 Allowed CORS origins:", allowedOrigins);
 
 app.use(cors({
   origin(origin, callback) {
-    // Sin origin (Postman, curl) o en la lista → OK
     if (!origin || allowedOrigins.includes(origin)) {
       return callback(null, true);
     }
-    // Si no, rechazamos
     callback(new Error(`CORS policy: origin ${origin} no permitido`));
   }
 }));
@@ -51,24 +48,23 @@ app.use(cors({
 // ─── Middlewares ─────────────────────────────────────────────────────────
 app.use(express.json());
 
-// Carpeta para subir imágenes (estático)
+// Carpeta de estáticos (subidas)
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(uploadDir));
 
-// ─── Health Checks ────────────────────────────────────────────────────────
-// Para Render:
-app.get("/healthz", (_req, res) => res.json({ status: "ok" }));
-// También mantenemos /api/health por compatibilidad local:
+// ─── Health Checks ───────────────────────────────────────────────────────
+app.get("/healthz",    (_req, res) => res.json({ status: "ok" }));
 app.get("/api/health", (_req, res) => res.json({ status: "ok" }));
-// Ruta raíz de humo
-app.get("/", (_req, res) => res.send("🧪 NekoShop Backend is alive"));
+app.get("/",           (_req, res) => res.send("🧪 NekoShop Backend is alive"));
 
-// ─── Montaje de rutas ─────────────────────────────────────────────────────
-// Auth / login
+// ─── Rutas ────────────────────────────────────────────────────────────────
+// Login
 app.use("/api/login", authRouter);
-// OAuth AliExpress (proveedores)
-app.use("/", suppliersAuthRouter);
+
+// OAuth AliExpress — montado sólo en /api/suppliers/:id/auth
+app.use("/api/suppliers/:id/auth", suppliersAuthRouter);
+
 // Resto de API
 app.use("/api/suppliers",       suppliersRouter);
 app.use("/api/products",        productsRouter);
@@ -85,15 +81,15 @@ app.use("/api/email-templates", emailTemplatesRouter);
 app.use("/api/newsletter",      newsletterRouter);
 app.use("/api/upload",          uploadImageRouter);
 
-// ─── Manejo de errores ────────────────────────────────────────────────────
-// 404 para rutas no encontradas
+// ─── Error Handling ──────────────────────────────────────────────────────
+// 404
 app.use((_, res) => res.status(404).json({ error: "Endpoint not found" }));
-// Captura de errores
+// Captura errores
 app.use((err, _, res, __) => {
   console.error("🔥 Error:", err.stack || err);
   res.status(err.status || 500).json({ error: err.message || "Server Error" });
 });
 
-// ─── Arranque del servidor ─────────────────────────────────────────────────
+// ─── Arranque ─────────────────────────────────────────────────────────────
 const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend escuchando en puerto ${PORT}`));
