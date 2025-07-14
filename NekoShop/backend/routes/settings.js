@@ -4,12 +4,13 @@ const express = require("express");
 const path    = require("path");
 const fs      = require("fs");
 const multer  = require("multer");
+const cloudinary = require("../config/cloudinary"); // tu config de Cloudinary
 const router  = express.Router();
 
-const dataDir = path.join(__dirname, "../data");
+const dataDir      = path.join(__dirname, "../data");
 const settingsFile = path.join(dataDir, "settings.json");
 
-// 1) Aseguramos carpeta y JSON de ajustes
+// 1) Aseguramos carpeta y archivo JSON de ajustes
 if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 if (!fs.existsSync(settingsFile)) {
   fs.writeFileSync(settingsFile, JSON.stringify({
@@ -23,15 +24,8 @@ if (!fs.existsSync(settingsFile)) {
   }, null, 2));
 }
 
-// 2) Configuración de multer para subir imágenes a /uploads
-const uploadDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
-const storage = multer.diskStorage({
-  destination: (_req, _file, cb) => cb(null, uploadDir),
-  filename: (_req, file, cb) =>
-    cb(null, `${Date.now()}-${file.originalname}`)
-});
-const upload = multer({ storage });
+// 2) Multer en memoria para obtener buffer
+const upload = multer({ storage: multer.memoryStorage() });
 
 // GET /api/settings
 router.get("/", (_req, res) => {
@@ -53,11 +47,29 @@ router.put("/", express.json(), (req, res) => {
   }
 });
 
-// POST /api/settings/heroImage
-router.post("/heroImage", upload.single("hero"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No se subió archivo" });
-  const url = `${req.protocol}://${req.get("host")}/uploads/${req.file.filename}`;
-  res.json({ url });
+/**
+ * POST /api/settings/heroImage
+ * Recibe el campo 'hero' (file), lo sube a Cloudinary y devuelve su secure_url.
+ */
+router.post("/heroImage", upload.single("hero"), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ error: "No se subió archivo" });
+    }
+    // Subimos buffer a Cloudinary
+    const result = await cloudinary.uploader.upload_stream(
+      { folder: "nekoshop/heroes" },
+      (error, uploadResult) => {
+        if (error) return res.status(500).json({ error: error.message });
+        // Devolver URL pública
+        res.json({ url: uploadResult.secure_url });
+      }
+    ).end(req.file.buffer);
+
+  } catch (err) {
+    console.error("Error en /api/settings/heroImage:", err);
+    res.status(500).json({ error: "Error subiendo a Cloudinary" });
+  }
 });
 
 module.exports = router;
