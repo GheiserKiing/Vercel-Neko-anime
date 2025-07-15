@@ -1,24 +1,17 @@
 // File: NekoShop/backend/routes/suppliersAuth.js
+require("dotenv").config();
+const express = require("express");
+const axios   = require("axios");
 
-require("dotenv").config(); // Asegúrate de cargar tus vars de entorno
-const express       = require("express");
-const axios         = require("axios");
-const path          = require("path");
-const sqlite3       = require("sqlite3").verbose(); // Si aún lo usas; si ya quitaste SQLite, elimina esas referencias
-const { promisify } = require("util");
-
-const router   = express.Router();
-// -- Si quitaste sqlite, quita estas 3 líneas y usa tu pool de Postgres en su lugar
-const dbPath   = path.join(__dirname, "../data/products.db");
-const db       = new sqlite3.Database(dbPath);
-const getAsync = promisify(db.get.bind(db));
-const runAsync = promisify(db.run.bind(db));
+const router = express.Router();
+// Importa tu pool de Postgres
+const pool   = require("../db-postgres");
 
 // URLs de AliExpress OAuth
 const ALI_AUTH_URL  = "https://gw.api.alibaba.com/auth/authorize.htm";
 const ALI_TOKEN_URL = "https://gw.api.alibaba.com/openapi/http/1/system.oauth2/getToken";
 
-// Comprueba que PUBLIC_BACKEND_URL venga en .env
+// Debes tener PUBLIC_BACKEND_URL en tu .env
 if (!process.env.PUBLIC_BACKEND_URL) {
   console.error("🔴 PUBLIC_BACKEND_URL no definido en .env");
   process.exit(1);
@@ -26,20 +19,25 @@ if (!process.env.PUBLIC_BACKEND_URL) {
 
 /**
  * GET /api/suppliersAuth/:id/auth
- *   → Redirige al login de AliExpress
+ *   ↪ Redirige al login de AliExpress
  */
 router.get("/:id/auth", async (req, res) => {
+  const supplierId = Number(req.params.id);
   try {
-    const supplierId = Number(req.params.id);
-    const sup = await getAsync("SELECT * FROM suppliers WHERE id=?", [supplierId]);
+    // Lee del Postgres
+    const { rows } = await pool.query(
+      "SELECT * FROM suppliers WHERE id = $1",
+      [supplierId]
+    );
+    const sup = rows[0];
     if (!sup) return res.status(404).send("Proveedor no encontrado");
 
-    // Aquí adaptamos sup.config, que puede venir ya como objeto o como string JSON:
-    let cfg;
+    // sup.config puede ser JSONB (objeto) o string
+    let cfg = {};
     if (typeof sup.config === "string") {
       cfg = JSON.parse(sup.config || "{}");
-    } else {
-      cfg = sup.config || {};
+    } else if (typeof sup.config === "object") {
+      cfg = sup.config;
     }
 
     if (!cfg.appKey) {
@@ -50,13 +48,13 @@ router.get("/:id/auth", async (req, res) => {
       `${process.env.PUBLIC_BACKEND_URL}/api/suppliersAuth/${supplierId}/auth/callback`
     );
 
-    const oauthUrl = `${ALI_AUTH_URL}`
-      + `?client_id=${encodeURIComponent(cfg.appKey)}`
-      + `&redirect_uri=${redirectUri}`
-      + `&site=aliexpress`;
+    const oauthUrl =
+      `${ALI_AUTH_URL}` +
+      `?client_id=${encodeURIComponent(cfg.appKey)}` +
+      `&redirect_uri=${redirectUri}` +
+      `&site=aliexpress`;
 
     return res.redirect(oauthUrl);
-
   } catch (err) {
     console.error("Error iniciando OAuth:", err);
     return res.status(500).send("Error iniciando OAuth");
@@ -65,29 +63,33 @@ router.get("/:id/auth", async (req, res) => {
 
 /**
  * GET /api/suppliersAuth/:id/auth/callback
- *   → AliExpress redirige aquí con ?code=
+ *   ↪ AliExpress redirige aquí con ?code=
  */
 router.get("/:id/auth/callback", async (req, res) => {
   const supplierId = Number(req.params.id);
-  const { code }   = req.query;
+  const { code } = req.query;
   if (!code) return res.status(400).send("Falta parámetro code");
 
   try {
-    const sup = await getAsync("SELECT * FROM suppliers WHERE id=?", [supplierId]);
+    const { rows } = await pool.query(
+      "SELECT * FROM suppliers WHERE id = $1",
+      [supplierId]
+    );
+    const sup = rows[0];
     if (!sup) return res.status(404).send("Proveedor no encontrado");
 
-    let cfg;
+    let cfg = {};
     if (typeof sup.config === "string") {
       cfg = JSON.parse(sup.config || "{}");
-    } else {
-      cfg = sup.config || {};
+    } else if (typeof sup.config === "object") {
+      cfg = sup.config;
     }
 
     if (!cfg.appKey || !cfg.appSecret) {
       return res.status(400).send("Falta appKey/appSecret en el proveedor");
     }
 
-    // Intercambia code por token en AliExpress
+    // Intercambia code por token
     const tokenRes = await axios.get(ALI_TOKEN_URL, {
       params: {
         client_id:     cfg.appKey,
@@ -98,16 +100,15 @@ router.get("/:id/auth/callback", async (req, res) => {
     });
 
     const tokenData = tokenRes.data;
-
-    // Guarda token dentro de config (ya objeto). Si tu base es Postgres JSONB, pásalo directo:
-    await runAsync(
-      "UPDATE suppliers SET config=? WHERE id=?;",
-      [ JSON.stringify({ ...cfg, tokenData }), supplierId ]
+    // Guarda tokenData dentro de config en Postgres
+    const newConfig = { ...cfg, tokenData };
+    await pool.query(
+      "UPDATE suppliers SET config = $1 WHERE id = $2",
+      [newConfig, supplierId]
     );
 
-    // Redirige de vuelta al panel admin (o raíz si no hay)
+    // Redirige al adminUrl o al raíz
     return res.redirect(sup.adminUrl || "/");
-
   } catch (err) {
     console.error("Error intercambiando token OAuth:", err);
     return res.status(500).send("Error intercambiando token");
