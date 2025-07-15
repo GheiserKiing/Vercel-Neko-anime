@@ -1,11 +1,8 @@
-// File: NekoShop/backend/db-postgres.js
-require("dotenv").config();
-
+// Pool PostgreSQL con SSL habilitado para Render
 const { Pool } = require("pg");
-const connectionString = process.env.DATABASE_URL;
 
 const pool = new Pool({
-  connectionString,
+  connectionString: process.env.DATABASE_URL,
   ssl: {
     rejectUnauthorized: false
   }

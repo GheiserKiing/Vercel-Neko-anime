@@ -3,96 +3,92 @@ require("dotenv").config();
 const express = require("express");
 const axios   = require("axios");
 const pool    = require("../db-postgres");
+const { authUrl, tokenUrl, getRedirectUri } = require("../config/aliExpressAuth");
+const router  = express.Router();
 
-const router = express.Router();
-
-const ALI_AUTH_URL  = "https://gw.api.alibaba.com/auth/authorize.htm";
-const ALI_TOKEN_URL = "https://gw.api.alibaba.com/openapi/http/1/system.oauth2/getToken";
-
-// Verifica que tengas PUBLIC_BACKEND_URL en tu .env
-if (!process.env.PUBLIC_BACKEND_URL) {
-  console.error("🔴 PUBLIC_BACKEND_URL no definido en .env");
-  process.exit(1);
-}
-
-// 1) Inicio OAuth: redirige al login de AliExpress
+// 1) Iniciar OAuth
+// GET /api/suppliersAuth/:id/auth
 router.get("/:id/auth", async (req, res) => {
-  try {
-    const supplierId = Number(req.params.id);
-    const { rows } = await pool.query(
-      "SELECT config, adminurl FROM suppliers WHERE id = $1",
-      [supplierId]
-    );
-    const sup = rows[0];
-    if (!sup) return res.status(404).send("Proveedor no encontrado");
+  const supplierId = Number(req.params.id);
 
-    // config ya es objeto (JSONB)
-    const cfg = sup.config || {};
-    if (!cfg.appKey) {
-      return res.status(400).send("Falta configurar appKey en el proveedor");
-    }
+  // 1.1) Leer config del proveedor en DB
+  const { rows } = await pool.query(
+    "SELECT config FROM suppliers WHERE id=$1",
+    [supplierId]
+  );
+  if (rows.length === 0) return res.status(404).send("Proveedor no encontrado");
 
-    const redirectUri = encodeURIComponent(
-      `${process.env.PUBLIC_BACKEND_URL}/api/suppliersAuth/${supplierId}/auth/callback`
-    );
-
-    const oauthUrl = `${ALI_AUTH_URL}`
-      + `?client_id=${encodeURIComponent(cfg.appKey)}`
-      + `&redirect_uri=${redirectUri}`
-      + `&site=aliexpress`;
-
-    return res.redirect(oauthUrl);
-
-  } catch (err) {
-    console.error("Error iniciando OAuth:", err);
-    res.status(500).send("Error iniciando OAuth");
+  let cfg = rows[0].config;
+  if (typeof cfg === "string") {
+    try { cfg = JSON.parse(cfg); }
+    catch { return res.status(400).send("config mal formado"); }
   }
+
+  // 1.2) Usar appKey de DB o fallback al .env
+  const appKey = cfg.appKey || process.env.ALIEXPRESS_APP_KEY;
+  if (!appKey) {
+    return res.status(400).send("Falta appKey (ni en DB ni en .env)");
+  }
+
+  // 1.3) Construir URL de autorización y redirigir
+  const redirectUri = encodeURIComponent(getRedirectUri(supplierId));
+  const oauthUrl = `${authUrl}` +
+                   `?client_id=${encodeURIComponent(appKey)}` +
+                   `&redirect_uri=${redirectUri}` +
+                   `&site=aliexpress`;
+  res.redirect(oauthUrl);
 });
 
-// 2) Callback OAuth: intercambia el código por token y guarda en JSONB
+// 2) Callback de OAuth
+// GET /api/suppliersAuth/:id/auth/callback
 router.get("/:id/auth/callback", async (req, res) => {
   const supplierId = Number(req.params.id);
-  const { code }   = req.query;
+  const { code } = req.query;
   if (!code) return res.status(400).send("Falta parámetro code");
 
+  // 2.1) Leer config + admin_url de DB
+  const { rows } = await pool.query(
+    "SELECT config, admin_url FROM suppliers WHERE id=$1",
+    [supplierId]
+  );
+  if (rows.length === 0) return res.status(404).send("Proveedor no encontrado");
+
+  let cfg = rows[0].config;
+  if (typeof cfg === "string") {
+    try { cfg = JSON.parse(cfg); }
+    catch { return res.status(400).send("config mal formado"); }
+  }
+
+  // 2.2) Usar appKey/appSecret de DB o fallback al .env
+  const appKey    = cfg.appKey    || process.env.ALIEXPRESS_APP_KEY;
+  const appSecret = cfg.appSecret || process.env.ALIEXPRESS_APP_SECRET;
+  if (!appKey || !appSecret) {
+    return res.status(400).send("Falta appKey/appSecret (ni en DB ni en .env)");
+  }
+
+  // 2.3) Intercambiar code por token
   try {
-    const { rows } = await pool.query(
-      "SELECT config, adminurl FROM suppliers WHERE id = $1",
-      [supplierId]
-    );
-    const sup = rows[0];
-    if (!sup) return res.status(404).send("Proveedor no encontrado");
-
-    const cfg = sup.config || {};
-    if (!cfg.appKey || !cfg.appSecret) {
-      return res.status(400).send("Falta appKey/appSecret en el proveedor");
-    }
-
-    // Llamada a token
-    const tokenRes = await axios.get(ALI_TOKEN_URL, {
+    const tokenRes = await axios.get(tokenUrl, {
       params: {
-        client_id:     cfg.appKey,
-        client_secret: cfg.appSecret,
+        client_id:     appKey,
+        client_secret: appSecret,
         grant_type:    "authorization_code",
         code
       }
     });
-
     const tokenData = tokenRes.data;
-    const newConfig = { ...cfg, tokenData };
 
-    // Actualiza JSONB directamente
+    // 2.4) Guardar token en DB (mezclado con cualquier cfg previo)
     await pool.query(
       "UPDATE suppliers SET config = $1 WHERE id = $2",
-      [newConfig, supplierId]
+      [ { ...cfg, appKey, appSecret, tokenData }, supplierId ]
     );
 
-    // Redirige al adminUrl si existe, si no a /
-    return res.redirect(sup.adminurl || "/");
-
-  } catch (err) {
-    console.error("Error intercambiando token OAuth:", err.response?.data || err);
-    res.status(500).send("Error intercambiando token");
+    // 2.5) Redirigir al adminUrl (o a "/")
+    res.redirect(rows[0].admin_url || "/");
+  } catch (error) {
+    console.error("Error obteniendo token AliExpress:", error.response?.data || error.message);
+    res.status(500).send("Error al obtener token de AliExpress");
   }
 });
 

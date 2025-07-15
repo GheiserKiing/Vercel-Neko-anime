@@ -1,21 +1,19 @@
-// File: NekoShop/backend/server.js
-
 require("dotenv").config();
 const express = require("express");
 const cors    = require("cors");
 const path    = require("path");
 const fs      = require("fs");
 
-// ← Importamos la pool con SSL habilitado
 const pool = require("./db-postgres");
 
 const app = express();
 
-// CORS dinámico
+// ─── CORS ────────────────────────────────────────────────────────────────
 const clientOrigin   = process.env.CLIENT_ORIGIN;
 const frontendOrigins = (process.env.FRONTEND_URL || "")
-  .split(",").map(s => s.trim()).filter(Boolean);
-const allowedOrigins = [clientOrigin, ...frontendOrigins].filter(Boolean);
+  .split(",").map(s=>s.trim()).filter(Boolean);
+const allowedOrigins = [ clientOrigin, ...frontendOrigins ].filter(Boolean);
+
 console.log("🔑 Allowed CORS origins:", allowedOrigins);
 
 app.use(cors({
@@ -26,20 +24,21 @@ app.use(cors({
     cb(new Error(`CORS policy: origin ${origin} not allowed`));
   }
 }));
+
 app.use(express.json());
 
-// Static uploads...
+// ─── Static uploads ───────────────────────────────────────────────────────
 const uploadDir = path.join(__dirname, "uploads");
 if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
 app.use("/uploads", express.static(uploadDir));
 
-// Health
+// ─── Health ───────────────────────────────────────────────────────────────
 app.get("/healthz", (_r, res) => res.json({ status: "ok" }));
 app.get("/api/health", (_r, res) => res.json({ status: "ok" }));
 
-// Rutas
+// ─── Rutas ────────────────────────────────────────────────────────────────
 app.use("/api/login",           require("./routes/auth"));
-app.use("/api/suppliersAuth",   require("./routes/suppliersAuth"));
+app.use("/api/suppliersAuth",   require("./routes/suppliersAuth")); // OAuth AliExpress
 app.use("/api/suppliers",       require("./routes/suppliers"));
 app.use("/api/products",        require("./routes/products"));
 app.use("/api/categories",      require("./routes/categories"));
@@ -55,9 +54,9 @@ app.use("/api/email-templates", require("./routes/emailTemplates"));
 app.use("/api/newsletter",      require("./routes/newsletter"));
 app.use("/api/upload",          require("./routes/uploadImage"));
 
-// 404 + handler
-app.use((_, res) => res.status(404).json({ error: "Endpoint not found" }));
-app.use((err, _, res, __) => {
+// ─── 404 + Error handler ──────────────────────────────────────────────────
+app.use((_,res) => res.status(404).json({ error: "Endpoint not found" }));
+app.use((err,_,res,__) => {
   console.error("🔥 Error:", err.stack || err);
   res.status(err.status || 500).json({ error: err.message || "Server Error" });
 });

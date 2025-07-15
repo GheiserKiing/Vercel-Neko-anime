@@ -40,9 +40,6 @@ export async function uploadHeroImage(file) {
   // El backend devuelve { url: "https://..." }
   const { url: absoluteUrl } = await res.json();
 
-  // Si quieres usar la ruta relativa en tu front:
-  // return { url: new URL(absoluteUrl).pathname };
-
-  // O devuelve la URL absoluta para que siempre funcione:
+  // Devuelve la URL absoluta para funcionar en cualquier entorno
   return { url: absoluteUrl };
 }
