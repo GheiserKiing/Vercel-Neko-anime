@@ -1,32 +1,35 @@
-// File: NekoShop/backend/scripts/updateSupplierConfig.js
+#!/usr/bin/env node
+require("dotenv").config();
+const { Pool } = require("pg");
 
-const pool = require('../db-postgres');
+// Asegúrate de que tu DATABASE_URL incluye ?sslmode=require o configura ssl abajo
+const pool = new Pool({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: false
+  }
+});
 
-async function run() {
-  // Leer args: node updateSupplierConfig.js <supplierId> <appKey> <appSecret>
-  const [ , , supplierIdArg, appKey, appSecret ] = process.argv;
-  const supplierId = Number(supplierIdArg);
-
-  if (!supplierIdArg || isNaN(supplierId) || !appKey || !appSecret) {
-    console.error('❌ Uso: node updateSupplierConfig.js <supplierId> <appKey> <appSecret>');
+async function main() {
+  const [ , , id, appKey, appSecret ] = process.argv;
+  if (!id || !appKey || !appSecret) {
+    console.error("Uso: node updateSupplierConfig.js <supplierId> <appKey> <appSecret>");
     process.exit(1);
   }
 
-  const newConfig = { appKey, appSecret };
+  const supplierId = Number(id);
+  const config = { appKey, appSecret };
 
-  try {
-    await pool.query(
-      `UPDATE suppliers
-       SET config = $1
-       WHERE id = $2`,
-      [ JSON.stringify(newConfig), supplierId ]
-    );
-    console.log(`✔️ Supplier #${supplierId} actualizado con config:`, newConfig);
-    process.exit(0);
-  } catch (err) {
-    console.error('🔥 Error actualizando supplier config:', err);
-    process.exit(1);
-  }
+  await pool.query(
+    "UPDATE suppliers SET config = $1 WHERE id = $2",
+    [config, supplierId]
+  );
+
+  console.log(`✔️ Supplier #${supplierId} actualizado con config:`, config);
+  await pool.end();
 }
 
-run();
+main().catch(err => {
+  console.error("❌ Error actualizando config del supplier:", err);
+  process.exit(1);
+});
