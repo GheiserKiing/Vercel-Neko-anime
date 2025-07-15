@@ -63,3 +63,5 @@ app.use((err,_,res,__) => {
 
 const PORT = parseInt(process.env.PORT, 10) || 4000;
 app.listen(PORT, () => console.log(`🚀 Backend listening on port ${PORT}`));
+// Ejecutar actualización de config al arrancar en Render (temporalmente)
+require("./scripts/updateAliConfig");
