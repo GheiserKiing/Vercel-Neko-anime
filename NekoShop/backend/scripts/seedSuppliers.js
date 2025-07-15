@@ -1,23 +1,19 @@
 // File: NekoShop/backend/scripts/seedSuppliers.js
-require("dotenv").config();
-const { Pool } = require("pg");
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = require("../db-postgres");
 
 async function main() {
+  // inserta un supplier de prueba
   const res = await pool.query(
-    `INSERT INTO suppliers (name, adminurl, config)
+    `INSERT INTO suppliers (name, adminUrl, config)
      VALUES ($1, $2, $3)
-     RETURNING id`,
+     RETURNING id;`,
     [
-      "AliExpress Demo",
-      "", // pon aquí la URL de tu admin (p.ej. tu frontend admin)
-      JSON.stringify({
-        appKey:    "TU_APP_KEY_DE_ALIEXPRESS",
-        appSecret: "TU_APP_SECRET_DE_ALIEXPRESS"
-      })
+      "AliExpress (test)",
+      process.env.PUBLIC_BACKEND_URL + "/admin",
+      JSON.stringify({ appKey: process.env.ALIEXPRESS_APP_KEY, appSecret: process.env.ALIEXPRESS_APP_SECRET })
     ]
   );
-  console.log("✅ Supplier creado con id =", res.rows[0].id);
+  console.log(`✅ Supplier creado con id = ${res.rows[0].id}`);
   process.exit(0);
 }
 

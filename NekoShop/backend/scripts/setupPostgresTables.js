@@ -1,18 +1,21 @@
 // File: NekoShop/backend/scripts/setupPostgresTables.js
-require("dotenv").config();
-const { Pool } = require("pg");
-const pool = new Pool({ connectionString: process.env.DATABASE_URL });
+const pool = require("../db-postgres");
 
 async function main() {
+  // crea tabla suppliers si no existe
   await pool.query(`
     CREATE TABLE IF NOT EXISTS suppliers (
       id SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      adminurl TEXT,
+      name TEXT,
+      adminUrl TEXT,
       config JSONB
     );
   `);
   console.log("✅ Tabla suppliers creada o ya existía");
   process.exit(0);
 }
-main().catch(err => { console.error(err); process.exit(1); });
+
+main().catch(err => {
+  console.error("🛑 Error al crear tablas:", err);
+  process.exit(1);
+});
